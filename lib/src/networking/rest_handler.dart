@@ -40,17 +40,23 @@ class RestHandler {
 
     await for (HttpRequest request in server) {
       List<Block> blockList = storageManager.BlockchainBlocks;
+      HttpResponse response = request.response;
+      response.headers.add(HttpHeaders.contentTypeHeader, 'application/json');
+      response.headers.add('Access-Control-Allow-Origin', '*');
+      response.headers.add('Access-Control-Allow-Methods', '*');
+      response.headers.add('Access-Control-Allow-Headers', '*');
+      response
       switch (request.method) {
         case 'GET':
           switch(request.requestedUri.path) {
             case FULL_BLOCKCHAIN:
-              request.response.write(
+              response.write(
                   jsonEncode(this._blockListToMap(blockList))
               );
               break;
             case WALLET:
               String walletAddress = request.uri.queryParameters['walletId'];
-              request.response.write(
+              response.write(
                   jsonEncode({
                     'funds': getFundsOfAddress(storageManager, walletAddress)
                   })
@@ -71,7 +77,7 @@ class RestHandler {
               if (blc.isValid) storageManager.storePendingBlock(blc);
               break;
           }
-          request.response.write('You are connected to the gitcoin chain!');
+          response.write('You are connected to the gitcoin chain!');
           break;
         case 'PUT':
           String content = await utf8.decoder.bind(request).join();
@@ -79,8 +85,8 @@ class RestHandler {
           switch (request.requestedUri.path) {
             case TRANSACTION:
               if (!(getFundsOfAddress(storageManager, rawMap['fromAddress']) >= rawMap['amount'])) {
-                request.response.statusCode = 401;
-                request.response.write('You can\'t spend more than you have!');
+                response.statusCode = 401;
+                response.write('You can\'t spend more than you have!');
                 break;
               }
                 Transaction trx = Transaction(
@@ -92,13 +98,13 @@ class RestHandler {
                 storageManager.storePendingTransaction(trx);
               break;
           }
-          request.response.write('You are connected to the gitcoin chain!');
+          response.write('You are connected to the gitcoin chain!');
           break;
         default:
-          request.response.write('You are connected to the gitcoin chain!');
+          response.write('You are connected to the gitcoin chain!');
           break;
       }
-      await request.response.close();
+      await response.close();
     }
   }
 }
