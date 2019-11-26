@@ -1,11 +1,7 @@
-name: gitcoin
-description: A Cryptocurrency to support Open Source Contributors
+name: labcoin
+description: A Cryptocurrency to for Oberlab Holzkirchen
 version: 0.0.1
-authors:
-  - Konstantin Ullrich <konstantinullrich12@gmail.com>
-  - Andreas Döring <andreas.doering@tum.de>
-  - Houssein Zaghdane <ge72xim@mytum.de>
-  - Moritz Wolf <moritz@moritz-wolf.de>
+author: Konstantin Ullrich <konstantinullrich12@gmail.com>
 # homepage: https://www.example.com
 
 environment:

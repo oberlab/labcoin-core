@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:crypton/crypton.dart';
-import 'package:gitcoin/gitcoin.dart';
+import 'package:labcoin/labcoin.dart';
 
 class Wallet {
   ECPublicKey _publicKey;

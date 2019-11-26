@@ -19,7 +19,6 @@ class Transaction {
   /// Returns if the Transaction is valid
   bool get isValid {
     if (this._fromAddress == null) return true; // We assume it is a miners Reward
-    if (this._fromAddress.startsWith('https://') || this._fromAddress.startsWith('http://')) return true; // We assume it is a Reward for a PR
 
     if (this._signature == null || this._signature.isEmpty) {
       throw('No signature in this transaction');

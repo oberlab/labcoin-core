@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:gitcoin/gitcoin.dart';
+import 'package:labcoin/labcoin.dart';
 
 /// HowTo Read Blockchain from File
 /// StorageManager storageManager = StorageManager('./storage/');

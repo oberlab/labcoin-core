@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:gitcoin/gitcoin.dart';
+import 'package:labcoin/labcoin.dart';
 
 Wallet wallet = Wallet.fromPem('./wallet/private_key', './wallet/public_key.pub');
 StorageManager storageManager = StorageManager('./storage/');

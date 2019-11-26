@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:gitcoin/gitcoin.dart';
+import 'package:labcoin/labcoin.dart';
 import 'package:http/http.dart' as http;
 
 class GithubWorker {

@@ -1,4 +1,4 @@
-library gitcoin;
+library labcoin;
 
 // Blockchain
 export 'src/blockchain/block.dart';

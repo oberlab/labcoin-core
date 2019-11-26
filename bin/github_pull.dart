@@ -1,6 +1,6 @@
 import 'dart:core';
 
-import 'package:gitcoin/gitcoin.dart';
+import 'package:labcoin/labcoin.dart';
 
 void main() {
   Wallet wallet1 = Wallet.fromPem('./wallet/private_key_konsti', './wallet/public_key_konsti.pub');

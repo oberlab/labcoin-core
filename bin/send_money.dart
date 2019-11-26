@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:gitcoin/gitcoin.dart';
+import 'package:labcoin/labcoin.dart';
 
 void main() {
   StorageManager storageManager = StorageManager('./storage');

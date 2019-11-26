@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypton/crypton.dart';
-import 'package:gitcoin/gitcoin.dart';
+import 'package:labcoin/labcoin.dart';
 
 /// GET  '/blockchain/full'         => get full Blockchain as Array
 /// GET  '/wallet?walletId=walletid'=> get current funds of walletId

@@ -1,4 +1,4 @@
-import 'package:gitcoin/gitcoin.dart';
+import 'package:labcoin/labcoin.dart';
 
 main() {
   Wallet wallet = Wallet.fromRandom();

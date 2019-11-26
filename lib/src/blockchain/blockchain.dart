@@ -1,7 +1,7 @@
 import 'dart:core';
 import 'dart:math';
 
-import 'package:gitcoin/gitcoin.dart';
+import 'package:labcoin/labcoin.dart';
 
 class Blockchain {
   int difficulty = 3;

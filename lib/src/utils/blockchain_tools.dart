@@ -1,4 +1,4 @@
-import 'package:gitcoin/gitcoin.dart';
+import 'package:labcoin/labcoin.dart';
 
 bool findInBlockList(List<Block> blocklist, String query_name, String query_value) {
   for (Block blc in blocklist) {

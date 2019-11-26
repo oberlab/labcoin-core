@@ -1,8 +1,6 @@
-# Gitcoin
+# Labcoin
 
-A Cryptocurrency to support open source contributors using Google's dartlang.
-Gitcoin is obtained by contributing to open source development on github and can be traded
-between users.
+The Oberlab local cryptocurrency.
 
 > A Blockchain explorer is avaliable at https://github.com/mowolf/gitcoin-frontend
 
@@ -18,7 +16,7 @@ between users.
 
 # Development
 
-Gitcoin uses various libraries to improve the development process:  
+Labcoin uses various libraries to improve the development process:  
 - [asn1lib :](https://pub.dev/packages/asn1lib) Encoding and decoding.  
 - [Crypton :](https://pub.dev/packages/crypton) ECSignature.  
 - [http :](https://pub.dev/packages/http) Http requests.  
