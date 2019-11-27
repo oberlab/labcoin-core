@@ -4,11 +4,10 @@ import 'package:labcoin/labcoin.dart';
 
 void main() {
   StorageManager storageManager = StorageManager('./storage');
-  Wallet wallet = Wallet.fromPem('./wallet/private_key', './wallet/public_key.pub');
+  Wallet wallet = Wallet.fromPem('./wallet/private_key');
   String myAddress = wallet.publicKey.toString();
   int yourCurrentFund = getFundsOfAddress(storageManager, myAddress);
   int spending = 0;
-
 
   print('Hello fellow Human');
   print('Your balance: ${yourCurrentFund}G');
@@ -30,5 +29,4 @@ void main() {
   storageManager.storePendingTransaction(trx);
   // ToDo: Broadcast to the Network
   print('You successfly transferd Money');
-
 }

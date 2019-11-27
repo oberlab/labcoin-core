@@ -29,7 +29,8 @@ String decodePEM(String pem) {
     }
   }
 
-  if (isOpenPgp) {    int index = pem.indexOf('\r\n');
+  if (isOpenPgp) {
+    int index = pem.indexOf('\r\n');
     pem = pem.substring(0, index);
   }
 
@@ -40,11 +41,11 @@ String decodePEM(String pem) {
 }
 
 String encodePublicKeyToPem(PublicKey publicKey) {
-String dataBase64 = publicKey.toString();
-return '''-----BEGIN PUBLIC KEY-----\r\n$dataBase64\r\n-----END PUBLIC KEY-----''';
+  String dataBase64 = publicKey.toString();
+  return '''-----BEGIN PUBLIC KEY-----\r\n$dataBase64\r\n-----END PUBLIC KEY-----''';
 }
 
 String encodePrivateKeyToPem(PrivateKey privateKey) {
-String dataBase64 = privateKey.toString();
-return '''-----BEGIN PRIVATE KEY-----\r\n$dataBase64\r\n-----END PRIVATE KEY-----''';
+  String dataBase64 = privateKey.toString();
+  return '''-----BEGIN PRIVATE KEY-----\r\n$dataBase64\r\n-----END PRIVATE KEY-----''';
 }

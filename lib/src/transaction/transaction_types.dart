@@ -1,8 +1,5 @@
-enum TransactionType {
-  transaction,
-  reward,
-  stake
-}
+enum TransactionType { transaction, reward, stake }
+
 /// TransactionTypes
 ///
 /// TransactionType.transaction

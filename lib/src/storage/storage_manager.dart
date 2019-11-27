@@ -7,8 +7,6 @@ import 'package:labcoin/labcoin.dart';
 /// StorageManager storageManager = StorageManager('./storage/');
 /// storageManager.BlockchainBlocks
 
-
-
 class StorageManager {
   final String folderPath;
   Directory _pendingTransactions;
@@ -49,6 +47,7 @@ class StorageManager {
       file.delete();
     }
   }
+
   void deletePendingTransaction(List<Transaction> listToDelete) {
     for (Transaction trx in listToDelete) {
       String filename = '${trx.toHash()}.trx';

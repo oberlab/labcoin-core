@@ -11,7 +11,8 @@ class Blockchain {
   StorageManager storageManager;
   List<Block> chain = [];
 
-  String get _proofOfWork => List(this.difficulty).join('').replaceAll('null', '0');
+  String get _proofOfWork =>
+      List(this.difficulty).join('').replaceAll('null', '0');
 
   /// Returns the Hash of the last Block of the Blockchain
   String get _previousHash => this.chain.last.toHash();
@@ -26,7 +27,9 @@ class Blockchain {
     Block last_block = this.chain.first;
     for (int i = 1; i < this.chain.length; i++) {
       Block block = this.chain[i];
-      if (block.previousHash != last_block.toHash()|| !block.toHash().startsWith(this._proofOfWork) || !block.isValid) {
+      if (block.previousHash != last_block.toHash() ||
+          !block.toHash().startsWith(this._proofOfWork) ||
+          !block.isValid) {
         return false;
       }
       last_block = block;
@@ -34,7 +37,8 @@ class Blockchain {
     return true;
   }
 
-  Blockchain(this.creatorWallet, this.storageManager, {this.broadcaster=null}) {
+  Blockchain(this.creatorWallet, this.storageManager,
+      {this.broadcaster = null}) {
     this.chain.add(Block(TransactionList(), ''));
   }
 
@@ -59,7 +63,8 @@ class Blockchain {
     String creator = this.creatorWallet.publicKey.toString();
     TransactionList pendingTransactions = storageManager.pendingTransactions;
     if (!pendingTransactions.isValid) {
-      storageManager.deletePendingTransaction(pendingTransactions.invalidTransactions);
+      storageManager
+          .deletePendingTransaction(pendingTransactions.invalidTransactions);
       return createBlock();
     }
     Block block = Block(pendingTransactions, creator);
@@ -98,14 +103,13 @@ class Blockchain {
     return result;
   }
 
-
   /// Return the Blockchain as Valid JSON String
   @override
   String toString() {
     String result = '[';
     int index = 0;
     chain.forEach((block) {
-      if (index+1 == chain.length) {
+      if (index + 1 == chain.length) {
         result += '${block.toString()}';
       } else {
         result += '${block.toString()},';

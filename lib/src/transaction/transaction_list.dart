@@ -22,11 +22,11 @@ class TransactionList {
     }
     return results;
   }
-  
+
   bool get isValid {
     return (invalidTransactions.length == 0);
   }
-  
+
   List<Map> toList() {
     List<Map> result = [];
     for (Transaction trx in this._trx) {
@@ -34,7 +34,7 @@ class TransactionList {
     }
     return result;
   }
-  
+
   String toString() {
     String result = "";
     for (Transaction trx in this._trx) {

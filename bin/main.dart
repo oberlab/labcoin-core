@@ -1,23 +1,23 @@
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:args/args.dart';
 import 'package:labcoin/labcoin.dart';
 
-Wallet wallet = Wallet.fromPem('./wallet/private_key', './wallet/public_key.pub');
-StorageManager storageManager = StorageManager('./storage/');
-String githubUser = 'konstantinullrich';
-int webPort = 3000;
-Broadcaster broadcaster = Broadcaster([]);
+void runBlockchainValidator(List params) {
+  Wallet wallet = params[0];
+  StorageManager storageManager = params[1];
+  Broadcaster broadcaster = params[2];
 
-void runBlockchainValidator(dynamic d) {
-  Blockchain blockchain = Blockchain(wallet, storageManager, broadcaster: broadcaster);
+  Blockchain blockchain =
+      Blockchain(wallet, storageManager, broadcaster: broadcaster);
   if (storageManager.BlockchainBlocks.length >= 1) {
     print('loading existing Blockchain');
     blockchain = storageManager.storedBlockchain;
     blockchain.creatorWallet = wallet;
     blockchain.broadcaster = broadcaster;
   }
-  while(true) {
+  while (true) {
     if (storageManager.pendingTransactions.length > 2) {
       print('Start mining a Block');
       final stopwatch = Stopwatch()..start();
@@ -29,13 +29,25 @@ void runBlockchainValidator(dynamic d) {
   }
 }
 
-void runWebServer(dynamic d) {
-  RestHandler restHandler = RestHandler(storageManager, webPort);
+void runWebServer(List params) {
+  StorageManager storageManager = params[0];
+  int port = params[1];
+  RestHandler restHandler = RestHandler(storageManager, port);
   restHandler.run();
 }
 
-void main() {
-  ReceivePort receivePort= ReceivePort();
-  Future<Isolate> blockchainValidator = Isolate.spawn(runBlockchainValidator, receivePort.sendPort);
-  Future<Isolate> webServer = Isolate.spawn(runWebServer, receivePort.sendPort);
+void main(List<String> args) {
+  ArgResults arguments = getArgParser().parse(args);
+
+  StorageManager storageManager = StorageManager('./storage/');
+  Broadcaster broadcaster = Broadcaster([]);
+
+  int port = int.parse(arguments['port']);
+  Wallet wallet = Wallet(arguments['private-key']);
+
+  if (arguments['init']) storageManager.init();
+
+  Future<Isolate> webServer =
+      Isolate.spawn(runWebServer, [storageManager, port]);
+  runBlockchainValidator([wallet, storageManager, broadcaster]);
 }

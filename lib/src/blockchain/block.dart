@@ -15,14 +15,12 @@ class Block {
   Block(this.data, this.creator);
 
   Block.fromMap(Map<String, dynamic> unresolvedBlock) {
-    if (
-    unresolvedBlock.containsKey('data') &&
+    if (unresolvedBlock.containsKey('data') &&
         unresolvedBlock.containsKey('creator') &&
         unresolvedBlock.containsKey('signature') &&
         unresolvedBlock.containsKey('timestamp') &&
         unresolvedBlock.containsKey('previousHash') &&
-        unresolvedBlock.containsKey('nuance')
-    ) {
+        unresolvedBlock.containsKey('nuance')) {
       this.data = TransactionList.fromList(unresolvedBlock['data']);
       this.creator = unresolvedBlock['creator'];
       this.signature = unresolvedBlock['signature'];
@@ -30,13 +28,14 @@ class Block {
       this.previousHash = unresolvedBlock['previousHash'];
       this.nuance = unresolvedBlock['nuance'];
     } else {
-      throw('Some Parameter are missing!');
+      throw ('Some Parameter are missing!');
     }
   }
 
   bool get isValid {
     ECPublicKey publicKey = ECPublicKey.fromString(this.creator);
-    bool hasValidSignature = publicKey.verifySignature(this.toHash(), this.signature);
+    bool hasValidSignature =
+        publicKey.verifySignature(this.toHash(), this.signature);
     return this.data.isValid && hasValidSignature;
   }
 
@@ -45,9 +44,7 @@ class Block {
   }
 
   String toHash() {
-    crypto.Digest digest = crypto.sha256.convert(
-        utf8.encode(this.toString())
-    );
+    crypto.Digest digest = crypto.sha256.convert(utf8.encode(this.toString()));
     return digest.toString();
   }
 
@@ -63,8 +60,7 @@ class Block {
   }
 
   String toString() {
-    return
-        this.nuance.toString() +
+    return this.nuance.toString() +
         this.creator +
         this.data.toString() +
         this.previousHash +

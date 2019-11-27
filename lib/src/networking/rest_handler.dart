@@ -16,7 +16,6 @@ const String TRANSACTION = '/transaction';
 const String BLOCK = '/block';
 
 class RestHandler {
-
   final StorageManager storageManager;
   final int port;
   final InternetAddress host = InternetAddress.anyIPv4;
@@ -32,11 +31,9 @@ class RestHandler {
   RestHandler(this.storageManager, this.port);
 
   Future run() async {
-    HttpServer server = await HttpServer.bind(
-      this.host,
-      this.port
-    );
-    print('Gitcoin Server running on "http://${server.address.address}:${server.port.toString()}"');
+    HttpServer server = await HttpServer.bind(this.host, this.port);
+    print(
+        'Labcoin Server running on "http://${server.address.address}:${server.port.toString()}"');
 
     await for (HttpRequest request in server) {
       List<Block> blockList = storageManager.BlockchainBlocks;
@@ -45,22 +42,16 @@ class RestHandler {
       response.headers.add('Access-Control-Allow-Origin', '*');
       response.headers.add('Access-Control-Allow-Methods', '*');
       response.headers.add('Access-Control-Allow-Headers', '*');
-      response
       switch (request.method) {
         case 'GET':
-          switch(request.requestedUri.path) {
+          switch (request.requestedUri.path) {
             case FULL_BLOCKCHAIN:
-              response.write(
-                  jsonEncode(this._blockListToMap(blockList))
-              );
+              response.write(jsonEncode(this._blockListToMap(blockList)));
               break;
             case WALLET:
               String walletAddress = request.uri.queryParameters['walletId'];
-              response.write(
-                  jsonEncode({
-                    'funds': getFundsOfAddress(storageManager, walletAddress)
-                  })
-              );
+              response.write(jsonEncode(
+                  {'funds': getFundsOfAddress(storageManager, walletAddress)}));
               break;
           }
           break;
@@ -84,18 +75,19 @@ class RestHandler {
           Map rawMap = jsonDecode(content);
           switch (request.requestedUri.path) {
             case TRANSACTION:
-              if (!(getFundsOfAddress(storageManager, rawMap['fromAddress']) >= rawMap['amount'])) {
+              ECPrivateKey privateKey =
+                  ECPrivateKey.fromString(rawMap['secretKey']);
+              String senderAddress = privateKey.publicKey.toString();
+              if (!(getFundsOfAddress(storageManager, senderAddress) >=
+                  rawMap['amount'])) {
                 response.statusCode = 401;
                 response.write('You can\'t spend more than you have!');
                 break;
               }
-                Transaction trx = Transaction(
-                    rawMap['fromAddress'],
-                    rawMap['toAddress'],
-                    rawMap['amount']
-                );
-                trx.signTransaction(ECPrivateKey.fromString(rawMap['senderKey']));
-                storageManager.storePendingTransaction(trx);
+              Transaction trx = Transaction(
+                  senderAddress, rawMap['toAddress'], rawMap['amount']);
+              trx.signTransaction(privateKey);
+              storageManager.storePendingTransaction(trx);
               break;
           }
           response.write('You are connected to the gitcoin chain!');

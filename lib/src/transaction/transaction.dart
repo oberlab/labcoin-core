@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:crypton/crypton.dart';
 
-
 class Transaction {
   String _fromAddress;
   String _toAddress;
@@ -18,27 +17,29 @@ class Transaction {
 
   /// Returns if the Transaction is valid
   bool get isValid {
-    if (this._fromAddress == null) return true; // We assume it is a miners Reward
+    if (this._fromAddress == null)
+      return true; // We assume it is a miners Reward
 
     if (this._signature == null || this._signature.isEmpty) {
-      throw('No signature in this transaction');
+      throw ('No signature in this transaction');
     }
 
     ECPublicKey publicKey = ECPublicKey.fromString(this._fromAddress);
-    bool hasValidSignature = publicKey.verifySignature(this.toHash(), this._signature);
+    bool hasValidSignature =
+        publicKey.verifySignature(this.toHash(), this._signature);
 
-    return this._fromAddress != this._toAddress && !this._amount.isNegative && hasValidSignature;
+    return this._fromAddress != this._toAddress &&
+        !this._amount.isNegative &&
+        hasValidSignature;
   }
 
   Transaction(this._fromAddress, this._toAddress, this._amount);
   Transaction.fromMap(Map<String, dynamic> unresolvedTransaction) {
-    if (
-    unresolvedTransaction.containsKey('fromAddress') &&
+    if (unresolvedTransaction.containsKey('fromAddress') &&
         unresolvedTransaction.containsKey('toAddress') &&
         unresolvedTransaction.containsKey('amount') &&
         unresolvedTransaction.containsKey('signature') &&
-        unresolvedTransaction.containsKey('timestamp')
-    ) {
+        unresolvedTransaction.containsKey('timestamp')) {
       this._fromAddress = unresolvedTransaction['fromAddress'];
       if (this._fromAddress == 'null') {
         this._fromAddress = null;
@@ -51,7 +52,7 @@ class Transaction {
       this._signature = unresolvedTransaction['signature'];
       this._timestamp = unresolvedTransaction['timestamp'];
     } else {
-      throw('Some Parameters are missing!');
+      throw ('Some Parameters are missing!');
     }
   }
 
@@ -60,9 +61,7 @@ class Transaction {
   }
 
   String toHash() {
-    return sha256.convert(
-        utf8.encode(this.toString())
-    ).toString();
+    return sha256.convert(utf8.encode(this.toString())).toString();
   }
 
   String toString() {
@@ -81,5 +80,4 @@ class Transaction {
       'timestamp': this._timestamp
     };
   }
-
 }

@@ -4,27 +4,28 @@ import 'package:crypton/crypton.dart';
 import 'package:labcoin/labcoin.dart';
 
 class Wallet {
-  ECPublicKey _publicKey;
   ECPrivateKey _privateKey;
 
-  ECPublicKey get publicKey => _publicKey;
+  ECPublicKey get publicKey => _privateKey.publicKey;
   ECPrivateKey get privateKey => _privateKey;
+
+  Wallet(String privateKey) {
+    this._privateKey = ECPrivateKey.fromString(privateKey);
+  }
 
   Wallet.fromRandom() {
     ECKeypair keypair = ECKeypair.fromRandom();
-    this._publicKey = keypair.publicKey;
     this._privateKey = keypair.privateKey;
   }
 
-  Wallet.fromPem(String privateKeyFilePath, String publicKeyFilePath) {
+  Wallet.fromPem(String privateKeyFilePath) {
     File privateKeyFile = File(privateKeyFilePath);
-    File publicKeyFile = File(publicKeyFilePath);
 
-    if (!privateKeyFile.existsSync()) throw('\"$privateKeyFilePath\" does not exist or is not a valid path');
-    if (!publicKeyFile.existsSync()) throw('\"$publicKeyFilePath\" does not exist or is not a valid path');
+    if (!privateKeyFile.existsSync())
+      throw ('\"$privateKeyFilePath\" does not exist or is not a valid path');
 
-    this._privateKey = ECPrivateKey.fromString(decodePEM(privateKeyFile.readAsStringSync()));
-    this._publicKey = ECPublicKey.fromString(decodePEM(publicKeyFile.readAsStringSync()));
+    this._privateKey =
+        ECPrivateKey.fromString(decodePEM(privateKeyFile.readAsStringSync()));
   }
 
   void saveToFile(String folderPath) {
@@ -39,5 +40,4 @@ class Wallet {
     privateKeyFile.writeAsString(encodePrivateKeyToPem(this.privateKey));
     publicKeyFile.writeAsString(encodePublicKeyToPem(this.publicKey));
   }
-
 }
