@@ -3,6 +3,7 @@ library labcoin;
 // Blockchain
 export 'src/blockchain/block.dart';
 export 'src/blockchain/blockchain.dart';
+export 'src/blockchain/stake_manager.dart';
 
 // Transactions
 export 'src/transaction/transaction.dart';

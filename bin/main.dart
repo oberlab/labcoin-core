@@ -22,6 +22,7 @@ void runBlockchainValidator(List params) {
       print('Start mining a Block');
       final stopwatch = Stopwatch()..start();
       blockchain.createBlock();
+      StakeManager.getValidator(storageManager.BlockchainBlocks);
       print('The mining Process was completed in ${stopwatch.elapsed}');
     } else {
       sleep(Duration(seconds: 10));

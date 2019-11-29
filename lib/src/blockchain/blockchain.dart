@@ -46,6 +46,7 @@ class Blockchain {
     unresolvedQuery.forEach((block) {
       chain.add(Block.fromMap(block));
     });
+    chain.sort((Block a, Block b) => a.depth.compareTo(b.depth));
   }
 
   /// Add a Block to the Blockchain and inform other Nodes about the Update
@@ -69,9 +70,10 @@ class Blockchain {
     }
     Block block = Block(pendingTransactions, creator);
     block.previousHash = this._previousHash;
-    block.signBlock(this.creatorWallet.privateKey);
+    block.depth = this.length;
     for (int i = 0; i < this.maxNonce; i++) {
       if (block.toHash().startsWith(this._proofOfWork)) {
+        block.signBlock(this.creatorWallet.privateKey);
         this._addBlock(block);
         storageManager.deletePendingTransactions();
         return;

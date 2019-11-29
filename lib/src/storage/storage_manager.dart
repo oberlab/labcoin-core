@@ -94,6 +94,15 @@ class StorageManager {
   List<Block> get BlockchainBlocks {
     List<Block> results = [];
     var files = blockchain.listSync();
+    files.sort((a,b) {
+      String aName = a.path.split("\\").last.replaceAll(".blc", "");
+      String bName = b.path.split("\\").last.replaceAll(".blc", "");
+      if (int.parse(aName) > int.parse(bName))
+        return 1;
+      else if(int.parse(aName) < int.parse(bName))
+        return -1;
+      return 0;
+    });
     for (var file in files) {
       File pblc = File(file.path);
       results.add(Block.fromMap(jsonDecode(pblc.readAsStringSync())));
@@ -104,6 +113,15 @@ class StorageManager {
   Blockchain get storedBlockchain {
     List<Map> results = [];
     var files = blockchain.listSync();
+    files.sort((a,b) {
+      String aName = a.path.split("\\").last.replaceAll(".blc", "");
+      String bName = b.path.split("\\").last.replaceAll(".blc", "");
+      if (int.parse(aName) > int.parse(bName))
+        return 1;
+      else if(int.parse(aName) < int.parse(bName))
+        return -1;
+      return 0;
+    });
     for (var file in files) {
       File pblc = File(file.path);
       results.add(jsonDecode(pblc.readAsStringSync()));
@@ -115,7 +133,7 @@ class StorageManager {
 
   void storeBlockchain(Blockchain blc_chn) {
     for (Block blc in blc_chn.chain) {
-      String filename = '${blc.toHash()}.blc';
+      String filename = '${blc.depth}.blc';
       File file = File('${this.blockchain.path}/$filename');
       if (!file.existsSync()) {
         file.createSync();

@@ -5,6 +5,7 @@ import 'package:crypton/crypton.dart';
 import 'package:labcoin/labcoin.dart';
 
 class Block {
+  int depth = 0;
   TransactionList data;
   String previousHash = '0x0';
   String creator = '';
@@ -14,17 +15,19 @@ class Block {
 
   Block(this.data, this.creator);
 
-  Block.fromMap(Map<String, dynamic> unresolvedBlock) {
+  Block.fromMap(Map unresolvedBlock) {
     if (unresolvedBlock.containsKey('data') &&
         unresolvedBlock.containsKey('creator') &&
         unresolvedBlock.containsKey('signature') &&
         unresolvedBlock.containsKey('timestamp') &&
         unresolvedBlock.containsKey('previousHash') &&
+        unresolvedBlock.containsKey('depth') &&
         unresolvedBlock.containsKey('nuance')) {
       this.data = TransactionList.fromList(unresolvedBlock['data']);
       this.creator = unresolvedBlock['creator'];
       this.signature = unresolvedBlock['signature'];
       this.timestamp = unresolvedBlock['timestamp'];
+      this.depth = unresolvedBlock['depth'];
       this.previousHash = unresolvedBlock['previousHash'];
       this.nuance = unresolvedBlock['nuance'];
     } else {
@@ -55,12 +58,14 @@ class Block {
       'signature': this.signature,
       'timestamp': this.timestamp,
       'nuance': this.nuance,
+      'depth': this.depth,
       'previousHash': this.previousHash
     };
   }
 
   String toString() {
-    return this.nuance.toString() +
+    return this.depth.toString() +
+        this.nuance.toString() +
         this.creator +
         this.data.toString() +
         this.previousHash +

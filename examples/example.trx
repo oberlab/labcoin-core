@@ -1,7 +1,7 @@
 {
-    "fromAddress": null,
+    "fromAddress": "00000000000000000000000000000000000000000000",
     "toAddress": "A/yqKGjN1Vt2ZBLzgjk1snBOKvdeM2Vq6NDggZ1Gbdam",
-    "amount": 100,
+    "amount": 10,
     "signature": "",
     "timestamp": 1111111111111
 }
