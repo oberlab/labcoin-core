@@ -28,6 +28,20 @@ int getFundsOfAddress(StorageManager storageManager, String address) {
   return balance;
 }
 
+int getFundsOfAddressInChain(List<Block> blockList, String address) {
+  int balance = 0;
+  List<Transaction> transactions =
+  getTransactionsOfAddress(blockList, [], address);
+  for (Transaction trx in transactions) {
+    if (trx.fromAddress == address) {
+      balance -= trx.amount;
+    } else if (trx.toAddress == address) {
+      balance += trx.amount;
+    }
+  }
+  return balance;
+}
+
 List<Transaction> getTransactionsOfAddress(
     List<Block> blockList, List<Map> pendingTrx, String address) {
   List<Transaction> results = [];

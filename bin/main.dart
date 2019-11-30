@@ -12,10 +12,14 @@ void runBlockchainValidator(List params) {
   Blockchain blockchain =
       Blockchain(wallet, storageManager, broadcaster: broadcaster);
   if (storageManager.BlockchainBlocks.length >= 1) {
-    print('loading existing Blockchain');
+    print('Loading existing Blockchain');
     blockchain = storageManager.storedBlockchain;
     blockchain.creatorWallet = wallet;
     blockchain.broadcaster = broadcaster;
+    if (!blockchain.isValid) {
+      print('The Blockchain is invalid!');
+      return;
+    }
   }
   while (true) {
     if (storageManager.pendingTransactions.length > 2) {
@@ -40,10 +44,10 @@ void runWebServer(List params) {
 void main(List<String> args) {
   ArgResults arguments = getArgParser().parse(args);
 
-  StorageManager storageManager = StorageManager('./storage/');
   Broadcaster broadcaster = Broadcaster([]);
 
   int port = int.parse(arguments['port']);
+  StorageManager storageManager = StorageManager(arguments['storage']);
   Wallet wallet = Wallet(arguments['private-key']);
 
   if (arguments['init']) storageManager.init();

@@ -17,7 +17,6 @@ class StakeManager {
         stakeHolders[trx.toAddress] -= trx.amount;
       }
     }
-
     Map<String, dynamic> stake = {'name': '', 'amount': 0};
     stakeHolders.forEach((String stakeHolder, int amount) {
       if (stake['amount'] < amount)

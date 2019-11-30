@@ -4,6 +4,8 @@ import 'package:crypto/crypto.dart';
 import 'package:crypton/crypton.dart';
 import 'package:labcoin/labcoin.dart';
 
+const String GENERATED_ADDRESS = "11111111111111111111111111111111111111111111";
+
 class Transaction {
   String _fromAddress;
   String _toAddress;
@@ -19,7 +21,10 @@ class Transaction {
   /// Returns if the Transaction is valid
   bool get isValid {
     if (this._fromAddress == StakeManager.ADDRESS)
-      return true; // We assume it is a generated Token or a Stake repayment
+      return true; // We assume it is a Stake repayment
+
+    if (this._fromAddress == GENERATED_ADDRESS)
+      return true; // We assume it is a generated token
 
     if (this._signature == StakeManager.ADDRESS || this._signature.isEmpty) {
       throw ('No signature in this transaction');

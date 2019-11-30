@@ -11,9 +11,6 @@ class Blockchain {
   StorageManager storageManager;
   List<Block> chain = [];
 
-  String get _proofOfWork =>
-      List(this.difficulty).join('').replaceAll('null', '0');
-
   /// Returns the Hash of the last Block of the Blockchain
   String get _previousHash => this.chain.last.toHash();
 
@@ -27,9 +24,12 @@ class Blockchain {
     Block last_block = this.chain.first;
     for (int i = 1; i < this.chain.length; i++) {
       Block block = this.chain[i];
+      String currentValidator =
+          StakeManager.getValidator(chain.sublist(0, i + 1));
       if (block.previousHash != last_block.toHash() ||
-          !block.toHash().startsWith(this._proofOfWork) ||
-          !block.isValid) {
+          !block.isValid ||
+          !(currentValidator.length == 0 ||
+              currentValidator == block.creator)) {
         return false;
       }
       last_block = block;
@@ -62,6 +62,9 @@ class Blockchain {
   /// Create a Block and add it to the ever growing Blockchain
   void createBlock() {
     String creator = this.creatorWallet.publicKey.toString();
+    if (!(StakeManager.getValidator(this.chain) == creator)){
+      throw("You are not the next Creator");
+    }
     TransactionList pendingTransactions = storageManager.pendingTransactions;
     if (!pendingTransactions.isValid) {
       storageManager
@@ -71,16 +74,9 @@ class Blockchain {
     Block block = Block(pendingTransactions, creator);
     block.previousHash = this._previousHash;
     block.depth = this.length;
-    for (int i = 0; i < this.maxNonce; i++) {
-      if (block.toHash().startsWith(this._proofOfWork)) {
-        block.signBlock(this.creatorWallet.privateKey);
-        this._addBlock(block);
-        storageManager.deletePendingTransactions();
-        return;
-      } else {
-        block.nuance += 1;
-      }
-    }
+    block.signBlock(this.creatorWallet.privateKey);
+    this._addBlock(block);
+    storageManager.deletePendingTransactions();
   }
 
   /// Resolve Conflicts occurred in any other process
