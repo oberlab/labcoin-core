@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:core';
 import 'dart:math';
 
+import 'package:http/http.dart';
 import 'package:labcoin/labcoin.dart';
 
 class Blockchain {
@@ -47,6 +49,29 @@ class Blockchain {
       chain.add(Block.fromMap(block));
     });
     chain.sort((Block a, Block b) => a.depth.compareTo(b.depth));
+  }
+
+  /// Initial a Blockchain from a network
+  static Future<Blockchain> fromNetwork(List<String> networkList, Wallet createWallet,
+      StorageManager storageManager) async {
+    List<Map> currentBlockchain = [];
+    for (String node in networkList) {
+      String url = node + '/blockchain/full';
+      Response response =  await get(url);
+      var receivedChain = jsonDecode(response.body) as List;
+      if (receivedChain.length > currentBlockchain.length) {
+        currentBlockchain = [];
+        receivedChain.forEach((var e) {
+          currentBlockchain.add(e as Map);
+        });
+      }
+    }
+    Blockchain blockchain = Blockchain.fromList(currentBlockchain);
+    blockchain.creatorWallet = createWallet;
+    blockchain.storageManager = storageManager;
+    blockchain.broadcaster = Broadcaster(networkList);
+    storageManager.storeBlockchain(blockchain);
+    return blockchain;
   }
 
   /// Add a Block to the Blockchain and inform other Nodes about the Update
