@@ -13,6 +13,7 @@ class StorageManager {
   Directory _pendingBlocks;
   Directory blockchain;
   List<File> selectedPendingTransactions = [];
+  List<File> selectedPendingBlocks = [];
 
   StorageManager(this.folderPath) {
     Directory directory = Directory(this.folderPath);
@@ -74,8 +75,14 @@ class StorageManager {
     file.writeAsStringSync(jsonEncode(trx.toMap()));
   }
 
+  void deletePendingBlocks() {
+    for (File file in selectedPendingBlocks) {
+      file.delete();
+    }
+  }
+
   void storePendingBlock(Block blc) {
-    String filename = '${blc.toHash()}.blc';
+    String filename = '${blc.depth.toString()}.blc';
     File file = File('${this._pendingBlocks.path}/$filename');
     if (!file.existsSync()) file.createSync();
     file.writeAsStringSync(jsonEncode(blc.toMap()));
@@ -84,8 +91,18 @@ class StorageManager {
   List<Block> get pendingBlocks {
     List<Block> results = [];
     var files = _pendingBlocks.listSync();
+    files.sort((a,b) {
+      String aName = a.path.split("\\").last.replaceAll(".blc", "");
+      String bName = b.path.split("\\").last.replaceAll(".blc", "");
+      if (int.parse(aName) > int.parse(bName))
+        return 1;
+      else if(int.parse(aName) < int.parse(bName))
+        return -1;
+      return 0;
+    });
     for (var file in files) {
       File pblc = File(file.path);
+      selectedPendingBlocks.add(pblc);
       results.add(Block.fromMap(jsonDecode(pblc.readAsStringSync())));
     }
     return results;

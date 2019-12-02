@@ -29,6 +29,10 @@ Future<void> runBlockchainValidator(List params) async {
   }
 
   while (true) {
+    List<Block> pendingBlocks = storageManager.pendingBlocks;
+    for (Block pendingBlock in pendingBlocks) {
+      blockchain.addBlock(pendingBlock);
+    }
     if (storageManager.pendingTransactions.length > 2) {
       print('Start mining a Block');
       final stopwatch = Stopwatch()..start();

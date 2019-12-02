@@ -84,6 +84,16 @@ class Blockchain {
     }
   }
 
+  /// Add a Block to the Blockchain
+  void addBlock(Block block) {
+    if (block.isValid &&
+        block.creator == StakeManager.getValidator(chain) &&
+        chain.last.toHash() == block.previousHash
+    ) {
+      chain.add(block);
+    }
+  }
+
   /// Create a Block and add it to the ever growing Blockchain
   void createBlock() {
     String creator = this.creatorWallet.publicKey.toString();
