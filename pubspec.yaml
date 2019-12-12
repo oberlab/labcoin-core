@@ -12,8 +12,7 @@ dependencies:
   crypto: ^2.1.3
   http: ^0.12.0+2
   crypton: ^1.0.1
-  webservant:
-    git: https://github.com/konstantinullrich/webservant.git
+  webservant: ^0.1.1
 
 dev_dependencies:
   pedantic: ^1.8.0
