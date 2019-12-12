@@ -33,6 +33,16 @@ class RestHandler {
 
   Future run() async {
     Webserver webserver = Webserver(hostname: host, port: port, fCORS: true);
+    void defaultResponse(Response res) {
+      res.write('You are connected to the Labcoin Chain');
+      res.send();
+    }
+
+    // Fuck CORS
+    webserver.options(FULL_BLOCKCHAIN, defaultResponse);
+    webserver.options(WALLET, defaultResponse);
+    webserver.options(TRANSACTION, defaultResponse);
+    webserver.options(BLOCK, defaultResponse);
 
     // Handle Gets
     webserver.get(FULL_BLOCKCHAIN, (Response response) {
