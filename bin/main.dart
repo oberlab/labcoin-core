@@ -14,8 +14,8 @@ Future<void> runBlockchainValidator(List params) async {
       Blockchain(wallet, storageManager, broadcaster: broadcaster);
   if (initOverNetwork) {
     print('Loading Blockchain from the Network');
-    blockchain = await Blockchain.fromNetwork(broadcaster.nodes, wallet,
-        storageManager);
+    blockchain =
+        await Blockchain.fromNetwork(broadcaster.nodes, wallet, storageManager);
   } else if (storageManager.BlockchainBlocks.length >= 1) {
     print('Loading existing Blockchain');
     blockchain = storageManager.storedBlockchain;
@@ -29,10 +29,6 @@ Future<void> runBlockchainValidator(List params) async {
   }
 
   while (true) {
-    List<Block> pendingBlocks = storageManager.pendingBlocks;
-    for (Block pendingBlock in pendingBlocks) {
-      blockchain.addBlock(pendingBlock);
-    }
     if (storageManager.pendingTransactions.length > 2) {
       print('Start mining a Block');
       final stopwatch = Stopwatch()..start();
@@ -68,5 +64,6 @@ void main(List<String> args) {
 
   Future<Isolate> webServer =
       Isolate.spawn(runWebServer, [storageManager, port]);
-  runBlockchainValidator([wallet, storageManager, broadcaster, arguments['init']]);
+  runBlockchainValidator(
+      [wallet, storageManager, broadcaster, arguments['init']]);
 }

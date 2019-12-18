@@ -52,12 +52,12 @@ class Blockchain {
   }
 
   /// Initial a Blockchain from a network
-  static Future<Blockchain> fromNetwork(List<String> networkList, Wallet createWallet,
-      StorageManager storageManager) async {
+  static Future<Blockchain> fromNetwork(List<String> networkList,
+      Wallet createWallet, StorageManager storageManager) async {
     List<Map> currentBlockchain = [];
     for (String node in networkList) {
       String url = node + '/blockchain/full';
-      Response response =  await get(url);
+      Response response = await get(url);
       var receivedChain = jsonDecode(response.body) as List;
       if (receivedChain.length > currentBlockchain.length) {
         currentBlockchain = [];
@@ -88,8 +88,7 @@ class Blockchain {
   void addBlock(Block block) {
     if (block.isValid &&
         block.creator == StakeManager.getValidator(chain) &&
-        chain.last.toHash() == block.previousHash
-    ) {
+        chain.last.toHash() == block.previousHash) {
       chain.add(block);
     }
   }
@@ -97,8 +96,8 @@ class Blockchain {
   /// Create a Block and add it to the ever growing Blockchain
   void createBlock() {
     String creator = this.creatorWallet.publicKey.toString();
-    if (!(StakeManager.getValidator(this.chain) == creator)){
-      throw("You are not the next Creator");
+    if (!(StakeManager.getValidator(this.chain) == creator)) {
+      throw ("You are not the next Creator");
     }
     TransactionList pendingTransactions = storageManager.pendingTransactions;
     if (!pendingTransactions.isValid) {

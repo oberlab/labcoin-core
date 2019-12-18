@@ -31,7 +31,7 @@ int getFundsOfAddress(StorageManager storageManager, String address) {
 int getFundsOfAddressInChain(List<Block> blockList, String address) {
   int balance = 0;
   List<Transaction> transactions =
-  getTransactionsOfAddress(blockList, [], address);
+      getTransactionsOfAddress(blockList, [], address);
   for (Transaction trx in transactions) {
     if (trx.fromAddress == address) {
       balance -= trx.amount;

@@ -35,11 +35,12 @@ class Transaction {
         publicKey.verifySignature(this.toHash(), this._signature);
 
     return this._fromAddress != this._toAddress &&
-        !this._amount.isNegative && hasValidSignature;
+        !this._amount.isNegative &&
+        hasValidSignature;
   }
 
   Transaction(this._fromAddress, this._toAddress, this._amount);
-  Transaction.fromMap(Map  unresolvedTransaction) {
+  Transaction.fromMap(Map unresolvedTransaction) {
     if (unresolvedTransaction.containsKey('fromAddress') &&
         unresolvedTransaction.containsKey('toAddress') &&
         unresolvedTransaction.containsKey('amount') &&

@@ -14,7 +14,6 @@ import 'package:webservant/webservant.dart';
 const String FULL_BLOCKCHAIN = '/blockchain/:count';
 const String WALLET = '/wallet';
 const String TRANSACTION = '/transaction';
-const String BLOCK = '/block';
 
 class RestHandler {
   final StorageManager storageManager;
@@ -42,7 +41,6 @@ class RestHandler {
     webserver.options(FULL_BLOCKCHAIN, defaultResponse);
     webserver.options(WALLET, defaultResponse);
     webserver.options(TRANSACTION, defaultResponse);
-    webserver.options(BLOCK, defaultResponse);
 
     // Handle Gets
     webserver.get(FULL_BLOCKCHAIN, (Response response) {
@@ -53,7 +51,8 @@ class RestHandler {
 
     webserver.get(WALLET, (Response response) {
       String walletAddress = response.queryParameters['walletId'];
-      response.write(jsonEncode({'funds': getFundsOfAddress(storageManager, walletAddress)}));
+      response.write(jsonEncode(
+          {'funds': getFundsOfAddress(storageManager, walletAddress)}));
       response.send();
     });
 
@@ -67,20 +66,10 @@ class RestHandler {
       response.send();
     });
 
-    webserver.post(BLOCK, (Response response) async {
-      String content = await response.requestData;
-      Map rawMap = jsonDecode(content);
-      Block blc = Block.fromMap(rawMap);
-      if (blc.isValid) storageManager.storePendingBlock(blc);
-      response.write('You are connected to the gitcoin chain!');
-      response.send();
-    });
-
     webserver.put(TRANSACTION, (Response response) async {
       String content = await response.requestData;
       Map rawMap = jsonDecode(content);
-      ECPrivateKey privateKey =
-      ECPrivateKey.fromString(rawMap['secretKey']);
+      ECPrivateKey privateKey = ECPrivateKey.fromString(rawMap['secretKey']);
       String senderAddress = privateKey.publicKey.toString();
       if (!(getFundsOfAddress(storageManager, senderAddress) >=
           rawMap['amount'])) {
@@ -89,8 +78,8 @@ class RestHandler {
         response.send();
         return;
       }
-      Transaction trx = Transaction(
-          senderAddress, rawMap['toAddress'], rawMap['amount']);
+      Transaction trx =
+          Transaction(senderAddress, rawMap['toAddress'], rawMap['amount']);
       trx.signTransaction(privateKey);
       storageManager.storePendingTransaction(trx);
       response.write('You are connected to the gitcoin chain!');
@@ -98,6 +87,5 @@ class RestHandler {
     });
 
     webserver.run();
-
   }
 }
