@@ -44,8 +44,35 @@ class RestHandler {
 
     // Handle Gets
     webserver.get(FULL_BLOCKCHAIN, (Response response) {
+      String count = response.urlParams['count'];
       List<Block> blockList = storageManager.BlockchainBlocks;
-      response.write(jsonEncode(this._blockListToMap(blockList)));
+      if (count.toLowerCase() == 'full') {
+        response.write(jsonEncode(this._blockListToMap(blockList)));
+      } else if (count.startsWith('-')) {
+        // Negative count means from last block counting
+        try {
+          int length = int.parse(count) * -1;
+          response.write(jsonEncode(this._blockListToMap(blockList.reversed
+              .toList()
+              .sublist(0, length)
+              .reversed
+              .toList())));
+        } catch (exception) {
+          response.statusCode = 400;
+          response.write(
+              jsonEncode({'message': 'Please specify the count as integer'}));
+        }
+      } else {
+        try {
+          int length = int.parse(count);
+          response.write(
+              jsonEncode(this._blockListToMap(blockList.sublist(0, length))));
+        } catch (exception) {
+          response.statusCode = 400;
+          response.write(
+              jsonEncode({'message': 'Please specify the count as integer'}));
+        }
+      }
       response.send();
     });
 
