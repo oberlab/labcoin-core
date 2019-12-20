@@ -21,8 +21,8 @@ class RestHandler {
   final InternetAddress host = InternetAddress.anyIPv4;
 
   List _blockListToMap(List<Block> blcList) {
-    List<Map> result = [];
-    for (Block blc in blcList) {
+    var result = [];
+    for (var blc in blcList) {
       result.add(blc.toMap());
     }
     return result;
@@ -31,7 +31,7 @@ class RestHandler {
   RestHandler(this.storageManager, this.port);
 
   Future run() async {
-    Webserver webserver = Webserver(hostname: host, port: port, fCORS: true);
+    var webserver = Webserver(hostname: host, port: port, fCORS: true);
     void defaultResponse(Response res) {
       res.write('You are connected to the Labcoin Chain');
       res.send();
@@ -44,19 +44,16 @@ class RestHandler {
 
     // Handle Gets
     webserver.get(FULL_BLOCKCHAIN, (Response response) {
-      String count = response.urlParams['count'];
-      List<Block> blockList = storageManager.BlockchainBlocks;
+      var count = response.urlParams['count'];
+      var blockList = storageManager.BlockchainBlocks;
       if (count.toLowerCase() == 'full') {
-        response.write(jsonEncode(this._blockListToMap(blockList)));
+        response.write(jsonEncode(_blockListToMap(blockList)));
       } else if (count.startsWith('-')) {
         // Negative count means from last block counting
         try {
-          int length = int.parse(count) * -1;
-          response.write(jsonEncode(this._blockListToMap(blockList.reversed
-              .toList()
-              .sublist(0, length)
-              .reversed
-              .toList())));
+          var length = int.parse(count) * -1;
+          response.write(jsonEncode(_blockListToMap(blockList.reversed.toList()
+              .sublist(0, length).reversed.toList())));
         } catch (exception) {
           response.statusCode = 400;
           response.write(
@@ -64,9 +61,9 @@ class RestHandler {
         }
       } else {
         try {
-          int length = int.parse(count);
+          var length = int.parse(count);
           response.write(
-              jsonEncode(this._blockListToMap(blockList.sublist(0, length))));
+              jsonEncode(_blockListToMap(blockList.sublist(0, length))));
         } catch (exception) {
           response.statusCode = 400;
           response.write(
@@ -77,7 +74,7 @@ class RestHandler {
     });
 
     webserver.get(WALLET, (Response response) {
-      String walletAddress = response.queryParameters['walletId'];
+      var walletAddress = response.queryParameters['walletId'];
       response.write(jsonEncode(
           {'funds': getFundsOfAddress(storageManager, walletAddress)}));
       response.send();
@@ -85,19 +82,19 @@ class RestHandler {
 
     // Handle Posts
     webserver.post(TRANSACTION, (Response response) async {
-      String content = await response.requestData;
+      var content = await response.requestData;
       Map rawMap = jsonDecode(content);
-      Transaction trx = Transaction.fromMap(rawMap);
+      var trx = Transaction.fromMap(rawMap);
       if (trx.isValid) storageManager.storePendingTransaction(trx);
       response.write('You are connected to the gitcoin chain!');
       response.send();
     });
 
     webserver.put(TRANSACTION, (Response response) async {
-      String content = await response.requestData;
+      var content = await response.requestData;
       Map rawMap = jsonDecode(content);
-      ECPrivateKey privateKey = ECPrivateKey.fromString(rawMap['secretKey']);
-      String senderAddress = privateKey.publicKey.toString();
+      var privateKey = ECPrivateKey.fromString(rawMap['secretKey']);
+      var senderAddress = privateKey.publicKey.toString();
       if (!(getFundsOfAddress(storageManager, senderAddress) >=
           rawMap['amount'])) {
         response.originalRequest.response.statusCode = 401;
@@ -105,8 +102,8 @@ class RestHandler {
         response.send();
         return;
       }
-      Transaction trx =
-          Transaction(senderAddress, rawMap['toAddress'], rawMap['amount']);
+      var trx =
+        Transaction(senderAddress, rawMap['toAddress'], rawMap['amount']);
       trx.signTransaction(privateKey);
       storageManager.storePendingTransaction(trx);
       response.write('You are connected to the gitcoin chain!');

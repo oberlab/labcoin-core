@@ -1,7 +1,7 @@
 import 'package:labcoin/labcoin.dart';
 
 class TransactionList {
-  List<Transaction> _trx = [];
+  final List<Transaction> _trx = [];
 
   TransactionList();
 
@@ -13,31 +13,32 @@ class TransactionList {
 
   int get length => _trx.length;
 
-  void add(Transaction trx) => this._trx.add(trx);
+  void add(Transaction trx) => _trx.add(trx);
 
   List<Transaction> get invalidTransactions {
-    List<Transaction> results = [];
-    for (Transaction trx in this._trx) {
+    var results = [];
+    for (var trx in _trx) {
       if (!trx.isValid) results.add(trx);
     }
     return results;
   }
 
   bool get isValid {
-    return (invalidTransactions.length == 0);
+    return invalidTransactions.isEmpty;
   }
 
   List<Map> toList() {
-    List<Map> result = [];
-    for (Transaction trx in this._trx) {
+    var result = [];
+    for (var trx in _trx) {
       result.add(trx.toMap());
     }
     return result;
   }
 
+  @override
   String toString() {
-    String result = "";
-    for (Transaction trx in this._trx) {
+    var result = '';
+    for (var trx in _trx) {
       result += trx.toString();
     }
     return result;

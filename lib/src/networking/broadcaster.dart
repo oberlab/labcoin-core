@@ -6,8 +6,8 @@ class Broadcaster {
   List<String> nodes = [];
   Broadcaster(this.nodes);
   void broadcast(String path, Map message) {
-    String broadcastMessage = jsonEncode(message);
-    for (String node in this.nodes) {
+    var broadcastMessage = jsonEncode(message);
+    for (var node in nodes) {
       post(node + path,
               headers: {'Content-Type': 'application/json'},
               body: broadcastMessage)

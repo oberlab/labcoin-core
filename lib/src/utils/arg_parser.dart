@@ -1,7 +1,7 @@
 import 'package:args/args.dart';
 
 ArgParser getArgParser() {
-  ArgParser parser = ArgParser();
+  var parser = ArgParser();
   parser.addFlag('init', defaultsTo: false);
   parser.addOption('private-key', defaultsTo: null);
   parser.addOption('network', abbr: 'n', defaultsTo: null);

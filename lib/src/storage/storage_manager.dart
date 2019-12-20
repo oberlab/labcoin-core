@@ -15,7 +15,7 @@ class StorageManager {
   List<File> selectedPendingBlocks = [];
 
   StorageManager(this.folderPath) {
-    Directory directory = Directory(this.folderPath);
+    var directory = Directory(folderPath);
     if (!directory.existsSync()) directory.createSync(recursive: true);
 
     _pendingTransactions = Directory('${directory.path}/pendingTransactions');
@@ -27,7 +27,7 @@ class StorageManager {
 
   /// Initialize a fresh new storage
   void init() {
-    Directory directory = Directory(this.folderPath);
+    var directory = Directory(folderPath);
     directory.deleteSync(recursive: true);
     directory.createSync();
 
@@ -39,24 +39,24 @@ class StorageManager {
   }
 
   void deletePendingTransactions() {
-    for (File file in selectedPendingTransactions) {
+    for (var file in selectedPendingTransactions) {
       file.delete();
     }
   }
 
   void deletePendingTransaction(List<Transaction> listToDelete) {
-    for (Transaction trx in listToDelete) {
-      String filename = '${trx.toHash()}.trx';
-      File file = File('${this._pendingTransactions.path}/$filename');
+    for (var trx in listToDelete) {
+      var filename = '${trx.toHash()}.trx';
+      var file = File('${_pendingTransactions.path}/$filename');
       if (file.existsSync()) file.delete();
     }
   }
 
   TransactionList get pendingTransactions {
-    TransactionList results = TransactionList();
+    var results = TransactionList();
     var files = _pendingTransactions.listSync();
     for (var file in files) {
-      File ptrx = File(file.path);
+      var ptrx = File(file.path);
       selectedPendingTransactions.add(ptrx);
       results.add(Transaction.fromMap(jsonDecode(ptrx.readAsStringSync())));
     }
@@ -64,54 +64,54 @@ class StorageManager {
   }
 
   void storePendingTransaction(Transaction trx) {
-    String filename = '${trx.toHash()}.trx';
-    File file = File('${this._pendingTransactions.path}/$filename');
+    var filename = '${trx.toHash()}.trx';
+    var file = File('${_pendingTransactions.path}/$filename');
     if (!file.existsSync()) file.createSync();
     file.writeAsStringSync(jsonEncode(trx.toMap()));
   }
 
   List<Block> get BlockchainBlocks {
-    List<Block> results = [];
+    var results = [];
     var files = blockchain.listSync();
     files.sort((a, b) {
-      String aName = a.path.split("\\").last.replaceAll(".blc", "");
-      String bName = b.path.split("\\").last.replaceAll(".blc", "");
-      if (int.parse(aName) > int.parse(bName))
+      var aName = a.path.split('\\').last.replaceAll('.blc', '');
+      var bName = b.path.split('\\').last.replaceAll('.blc', '');
+      if (int.parse(aName) > int.parse(bName)) {
         return 1;
-      else if (int.parse(aName) < int.parse(bName)) return -1;
+      } else if (int.parse(aName) < int.parse(bName)) return -1;
       return 0;
     });
     for (var file in files) {
-      File pblc = File(file.path);
+      var pblc = File(file.path);
       results.add(Block.fromMap(jsonDecode(pblc.readAsStringSync())));
     }
     return results;
   }
 
   Blockchain get storedBlockchain {
-    List<Map> results = [];
+    var results = [];
     var files = blockchain.listSync();
     files.sort((a, b) {
-      String aName = a.path.split("\\").last.replaceAll(".blc", "");
-      String bName = b.path.split("\\").last.replaceAll(".blc", "");
-      if (int.parse(aName) > int.parse(bName))
+      var aName = a.path.split('\\').last.replaceAll('.blc', '');
+      var bName = b.path.split('\\').last.replaceAll('.blc', '');
+      if (int.parse(aName) > int.parse(bName)) {
         return 1;
-      else if (int.parse(aName) < int.parse(bName)) return -1;
+      } else if (int.parse(aName) < int.parse(bName)) return -1;
       return 0;
     });
     for (var file in files) {
-      File pblc = File(file.path);
+      var pblc = File(file.path);
       results.add(jsonDecode(pblc.readAsStringSync()));
     }
-    Blockchain blc = Blockchain.fromList(results);
+    var blc = Blockchain.fromList(results);
     blc.storageManager = this;
     return blc;
   }
 
   void storeBlockchain(Blockchain blc_chn) {
-    for (Block blc in blc_chn.chain) {
-      String filename = '${blc.depth}.blc';
-      File file = File('${this.blockchain.path}/$filename');
+    for (var blc in blc_chn.chain) {
+      var filename = '${blc.depth}.blc';
+      var file = File('${blockchain.path}/$filename');
       if (!file.existsSync()) {
         file.createSync();
         file.writeAsStringSync(jsonEncode(blc.toMap()));

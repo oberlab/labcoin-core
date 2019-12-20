@@ -10,34 +10,35 @@ class Wallet {
   ECPrivateKey get privateKey => _privateKey;
 
   Wallet(String privateKey) {
-    this._privateKey = ECPrivateKey.fromString(privateKey);
+    _privateKey = ECPrivateKey.fromString(privateKey);
   }
 
   Wallet.fromRandom() {
-    ECKeypair keypair = ECKeypair.fromRandom();
-    this._privateKey = keypair.privateKey;
+    var keypair = ECKeypair.fromRandom();
+    _privateKey = keypair.privateKey;
   }
 
   Wallet.fromPem(String privateKeyFilePath) {
-    File privateKeyFile = File(privateKeyFilePath);
+    var privateKeyFile = File(privateKeyFilePath);
 
-    if (!privateKeyFile.existsSync())
+    if (!privateKeyFile.existsSync()) {
       throw ('\"$privateKeyFilePath\" does not exist or is not a valid path');
+    }
 
-    this._privateKey =
+    _privateKey =
         ECPrivateKey.fromString(decodePEM(privateKeyFile.readAsStringSync()));
   }
 
   void saveToFile(String folderPath) {
-    Directory directory = Directory(folderPath);
+    var directory = Directory(folderPath);
     if (!directory.existsSync()) directory.createSync(recursive: true);
 
-    File privateKeyFile = File('${directory.path}/private_key');
-    File publicKeyFile = File('${directory.path}/public_key.pub');
+    var privateKeyFile = File('${directory.path}/private_key');
+    var publicKeyFile = File('${directory.path}/public_key.pub');
     if (!privateKeyFile.existsSync()) privateKeyFile.createSync();
     if (!publicKeyFile.existsSync()) publicKeyFile.createSync();
 
-    privateKeyFile.writeAsString(encodePrivateKeyToPem(this.privateKey));
-    publicKeyFile.writeAsString(encodePublicKeyToPem(this.publicKey));
+    privateKeyFile.writeAsString(encodePrivateKeyToPem(privateKey));
+    publicKeyFile.writeAsString(encodePublicKeyToPem(publicKey));
   }
 }

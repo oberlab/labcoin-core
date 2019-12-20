@@ -2,10 +2,10 @@ import 'package:labcoin/labcoin.dart';
 
 bool findInBlockList(
     List<Block> blocklist, String query_name, String query_value) {
-  for (Block blc in blocklist) {
+  for (var blc in blocklist) {
     Map blc_map = blc.toMap();
     List<Map> transactions = blc_map['data'];
-    for (Map transaction in transactions) {
+    for (var transaction in transactions) {
       if (transaction[query_name] == query_value) return true;
     }
   }
@@ -13,12 +13,11 @@ bool findInBlockList(
 }
 
 int getFundsOfAddress(StorageManager storageManager, String address) {
-  List<Block> blockList = storageManager.BlockchainBlocks;
-  List<Map> pendingTrx = storageManager.pendingTransactions.toList();
-  int balance = 0;
-  List<Transaction> transactions =
-      getTransactionsOfAddress(blockList, pendingTrx, address);
-  for (Transaction trx in transactions) {
+  var blockList = storageManager.BlockchainBlocks;
+  var pendingTrx = storageManager.pendingTransactions.toList();
+  var balance = 0;
+  var transactions = getTransactionsOfAddress(blockList, pendingTrx, address);
+  for (var trx in transactions) {
     if (trx.fromAddress == address) {
       balance -= trx.amount;
     } else if (trx.toAddress == address) {
@@ -29,10 +28,9 @@ int getFundsOfAddress(StorageManager storageManager, String address) {
 }
 
 int getFundsOfAddressInChain(List<Block> blockList, String address) {
-  int balance = 0;
-  List<Transaction> transactions =
-      getTransactionsOfAddress(blockList, [], address);
-  for (Transaction trx in transactions) {
+  var balance = 0;
+  var transactions = getTransactionsOfAddress(blockList, [], address);
+  for (var trx in transactions) {
     if (trx.fromAddress == address) {
       balance -= trx.amount;
     } else if (trx.toAddress == address) {
@@ -44,16 +42,16 @@ int getFundsOfAddressInChain(List<Block> blockList, String address) {
 
 List<Transaction> getTransactionsOfAddress(
     List<Block> blockList, List<Map> pendingTrx, String address) {
-  List<Transaction> results = [];
+  var results = [];
 
-  for (Block blc in blockList) {
-    for (Map trx in blc.data.toList()) {
+  for (var blc in blockList) {
+    for (var trx in blc.data.toList()) {
       if (trx['fromAddress'] == address || trx['toAddress'] == address) {
         results.add(Transaction.fromMap(trx));
       }
     }
   }
-  for (Map trx in pendingTrx) {
+  for (var trx in pendingTrx) {
     if (trx['fromAddress'] == address || trx['toAddress'] == address) {
       results.add(Transaction.fromMap(trx));
     }

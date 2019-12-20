@@ -23,52 +23,52 @@ class Block {
         unresolvedBlock.containsKey('previousHash') &&
         unresolvedBlock.containsKey('depth') &&
         unresolvedBlock.containsKey('nuance')) {
-      this.data = TransactionList.fromList(unresolvedBlock['data']);
-      this.creator = unresolvedBlock['creator'];
-      this.signature = unresolvedBlock['signature'];
-      this.timestamp = unresolvedBlock['timestamp'];
-      this.depth = unresolvedBlock['depth'];
-      this.previousHash = unresolvedBlock['previousHash'];
-      this.nuance = unresolvedBlock['nuance'];
+      data = TransactionList.fromList(unresolvedBlock['data']);
+      creator = unresolvedBlock['creator'];
+      signature = unresolvedBlock['signature'];
+      timestamp = unresolvedBlock['timestamp'];
+      depth = unresolvedBlock['depth'];
+      previousHash = unresolvedBlock['previousHash'];
+      nuance = unresolvedBlock['nuance'];
     } else {
       throw ('Some Parameter are missing!');
     }
   }
 
   bool get isValid {
-    ECPublicKey publicKey = ECPublicKey.fromString(this.creator);
-    bool hasValidSignature =
-        publicKey.verifySignature(this.toHash(), this.signature);
-    return this.data.isValid && hasValidSignature;
+    var publicKey = ECPublicKey.fromString(creator);
+    var hasValidSignature = publicKey.verifySignature(toHash(), signature);
+    return data.isValid && hasValidSignature;
   }
 
   void signBlock(PrivateKey privateKey) {
-    signature = privateKey.createSignature(this.toHash());
+    signature = privateKey.createSignature(toHash());
   }
 
   String toHash() {
-    crypto.Digest digest = crypto.sha256.convert(utf8.encode(this.toString()));
+    var digest = crypto.sha256.convert(utf8.encode(toString()));
     return digest.toString();
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'data': this.data.toList(),
-      'creator': this.creator,
-      'signature': this.signature,
-      'timestamp': this.timestamp,
-      'nuance': this.nuance,
-      'depth': this.depth,
-      'previousHash': this.previousHash
+      'data': data.toList(),
+      'creator': creator,
+      'signature': signature,
+      'timestamp': timestamp,
+      'nuance': nuance,
+      'depth': depth,
+      'previousHash': previousHash
     };
   }
 
+  @override
   String toString() {
-    return this.depth.toString() +
-        this.nuance.toString() +
-        this.creator +
-        this.data.toString() +
-        this.previousHash +
-        this.timestamp.toString();
+    return depth.toString() +
+        nuance.toString() +
+        creator +
+        data.toString() +
+        previousHash +
+        timestamp.toString();
   }
 }

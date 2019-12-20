@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:args/args.dart';
 import 'package:labcoin/labcoin.dart';
 
 Future<void> runBlockchainValidator(List params) async {
@@ -10,13 +9,12 @@ Future<void> runBlockchainValidator(List params) async {
   Broadcaster broadcaster = params[2];
   bool initOverNetwork = params[3];
 
-  Blockchain blockchain =
-      Blockchain(wallet, storageManager, broadcaster: broadcaster);
+  var blockchain = Blockchain(wallet, storageManager, broadcaster: broadcaster);
   if (initOverNetwork) {
     print('Loading Blockchain from the Network');
     blockchain =
         await Blockchain.fromNetwork(broadcaster.nodes, wallet, storageManager);
-  } else if (storageManager.BlockchainBlocks.length >= 1) {
+  } else if (storageManager.BlockchainBlocks.isNotEmpty) {
     print('Loading existing Blockchain');
     blockchain = storageManager.storedBlockchain;
     blockchain.creatorWallet = wallet;
@@ -43,27 +41,26 @@ Future<void> runBlockchainValidator(List params) async {
 void runWebServer(List params) {
   StorageManager storageManager = params[0];
   int port = params[1];
-  RestHandler restHandler = RestHandler(storageManager, port);
+  var restHandler = RestHandler(storageManager, port);
   restHandler.run();
 }
 
 void main(List<String> args) {
-  ArgResults arguments = getArgParser().parse(args);
+  var arguments = getArgParser().parse(args);
 
-  List<String> networkList = [];
+  var networkList = [];
   if (arguments['network'] != null) {
-    networkList = arguments['network'].split(",");
+    networkList = arguments['network'].split(',');
   }
-  Broadcaster broadcaster = Broadcaster(networkList);
+  var broadcaster = Broadcaster(networkList);
 
-  int port = int.parse(arguments['port']);
-  StorageManager storageManager = StorageManager(arguments['storage']);
-  Wallet wallet = Wallet(arguments['private-key']);
+  var port = int.parse(arguments['port']);
+  var storageManager = StorageManager(arguments['storage']);
+  var wallet = Wallet(arguments['private-key']);
 
   if (arguments['init']) storageManager.init();
 
-  Future<Isolate> webServer =
-      Isolate.spawn(runWebServer, [storageManager, port]);
+  var webServer = Isolate.spawn(runWebServer, [storageManager, port]);
   runBlockchainValidator(
       [wallet, storageManager, broadcaster, arguments['init']]);
 }

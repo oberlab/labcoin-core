@@ -4,7 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'package:crypton/crypton.dart';
 import 'package:labcoin/labcoin.dart';
 
-const String GENERATED_ADDRESS = "11111111111111111111111111111111111111111111";
+const String GENERATED_ADDRESS = '11111111111111111111111111111111111111111111';
 
 class Transaction {
   String _fromAddress;
@@ -20,23 +20,23 @@ class Transaction {
 
   /// Returns if the Transaction is valid
   bool get isValid {
-    if (this._fromAddress == StakeManager.ADDRESS)
-      return true; // We assume it is a Stake repayment
+    if (_fromAddress == StakeManager.ADDRESS) {
+      return true;
+    } // We assume it is a Stake repayment
 
-    if (this._fromAddress == GENERATED_ADDRESS)
-      return true; // We assume it is a generated token
+    if (_fromAddress == GENERATED_ADDRESS) {
+      return true;
+    } // We assume it is a generated token
 
-    if (this._signature == StakeManager.ADDRESS || this._signature.isEmpty) {
+    if (_signature == StakeManager.ADDRESS || _signature.isEmpty) {
       throw ('No signature in this transaction');
     }
 
-    ECPublicKey publicKey = ECPublicKey.fromString(this._fromAddress);
-    bool hasValidSignature =
-        publicKey.verifySignature(this.toHash(), this._signature);
+    var publicKey = ECPublicKey.fromString(_fromAddress);
+    var hasValidSignature = publicKey.verifySignature(toHash(), _signature);
 
-    return this._fromAddress != this._toAddress &&
-        !this._amount.isNegative &&
-        hasValidSignature;
+    return _fromAddress != _toAddress &&
+        !_amount.isNegative && hasValidSignature;
   }
 
   Transaction(this._fromAddress, this._toAddress, this._amount);
@@ -46,44 +46,45 @@ class Transaction {
         unresolvedTransaction.containsKey('amount') &&
         unresolvedTransaction.containsKey('signature') &&
         unresolvedTransaction.containsKey('timestamp')) {
-      this._fromAddress = unresolvedTransaction['fromAddress'];
-      if (this._fromAddress == 'null') {
-        this._fromAddress = null;
+      _fromAddress = unresolvedTransaction['fromAddress'];
+      if (_fromAddress == 'null') {
+        _fromAddress = null;
       }
-      this._toAddress = unresolvedTransaction['toAddress'];
-      if (this._toAddress == 'null') {
-        this._toAddress = null;
+      _toAddress = unresolvedTransaction['toAddress'];
+      if (_toAddress == 'null') {
+        _toAddress = null;
       }
-      this._amount = unresolvedTransaction['amount'];
-      this._signature = unresolvedTransaction['signature'];
-      this._timestamp = unresolvedTransaction['timestamp'];
+      _amount = unresolvedTransaction['amount'];
+      _signature = unresolvedTransaction['signature'];
+      _timestamp = unresolvedTransaction['timestamp'];
     } else {
       throw ('Some Parameters are missing!');
     }
   }
 
   void signTransaction(PrivateKey privateKey) {
-    this._signature = privateKey.createSignature(this.toHash());
+    _signature = privateKey.createSignature(toHash());
   }
 
   String toHash() {
-    return sha256.convert(utf8.encode(this.toString())).toString();
+    return sha256.convert(utf8.encode(toString())).toString();
   }
 
+  @override
   String toString() {
-    return this._fromAddress.toString() +
-        this._toAddress.toString() +
-        this._amount.toString() +
-        this._timestamp.toString();
+    return _fromAddress.toString() +
+        _toAddress.toString() +
+        _amount.toString() +
+        _timestamp.toString();
   }
 
   Map toMap() {
     return {
-      'fromAddress': this._fromAddress,
-      'toAddress': this._toAddress,
-      'amount': this._amount,
-      'signature': this._signature,
-      'timestamp': this._timestamp
+      'fromAddress': _fromAddress,
+      'toAddress': _toAddress,
+      'amount': _amount,
+      'signature': _signature,
+      'timestamp': _timestamp
     };
   }
 }
