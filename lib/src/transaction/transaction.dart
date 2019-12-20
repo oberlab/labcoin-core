@@ -36,7 +36,8 @@ class Transaction {
     var hasValidSignature = publicKey.verifySignature(toHash(), _signature);
 
     return _fromAddress != _toAddress &&
-        !_amount.isNegative && hasValidSignature;
+        !_amount.isNegative &&
+        hasValidSignature;
   }
 
   Transaction(this._fromAddress, this._toAddress, this._amount);
