@@ -52,8 +52,11 @@ class RestHandler {
         // Negative count means from last block counting
         try {
           var length = int.parse(count) * -1;
-          response.write(jsonEncode(_blockListToMap(blockList.reversed.toList()
-              .sublist(0, length).reversed.toList())));
+          response.write(jsonEncode(_blockListToMap(blockList.reversed
+              .toList()
+              .sublist(0, length)
+              .reversed
+              .toList())));
         } catch (exception) {
           response.statusCode = 400;
           response.write(
@@ -62,8 +65,8 @@ class RestHandler {
       } else {
         try {
           var length = int.parse(count);
-          response.write(
-              jsonEncode(_blockListToMap(blockList.sublist(0, length))));
+          response
+              .write(jsonEncode(_blockListToMap(blockList.sublist(0, length))));
         } catch (exception) {
           response.statusCode = 400;
           response.write(
@@ -103,7 +106,7 @@ class RestHandler {
         return;
       }
       var trx =
-        Transaction(senderAddress, rawMap['toAddress'], rawMap['amount']);
+          Transaction(senderAddress, rawMap['toAddress'], rawMap['amount']);
       trx.signTransaction(privateKey);
       storageManager.storePendingTransaction(trx);
       response.write('You are connected to the gitcoin chain!');

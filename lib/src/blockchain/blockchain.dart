@@ -71,6 +71,18 @@ class Blockchain {
     return blockchain;
   }
 
+
+  Future updateFromNetwork() async {
+    for (var node in broadcaster.nodes) {
+      var url = node + '/blockchain/-5';
+      var response = await get(url);
+      if (response.statusCode == 200) {
+        var receivedChain = jsonDecode(response.body) as List;
+        //TODO: Implement later Gotta play Video Games Now
+      }
+    }
+  }
+
   /// Add a Block to the Blockchain and inform other Nodes about the Update
   /// to reach Consensus
   void _addBlock(Block block) {
