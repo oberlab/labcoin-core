@@ -71,7 +71,7 @@ class StorageManager {
   }
 
   List<Block> get BlockchainBlocks {
-    var results = [];
+    var results = <Block>[];
     var files = blockchain.listSync();
     files.sort((a, b) {
       var aName = a.path.split('\\').last.replaceAll('.blc', '');
@@ -89,7 +89,7 @@ class StorageManager {
   }
 
   Blockchain get storedBlockchain {
-    var results = [];
+    var results = <Map>[];
     var files = blockchain.listSync();
     files.sort((a, b) {
       var aName = a.path.split('\\').last.replaceAll('.blc', '');

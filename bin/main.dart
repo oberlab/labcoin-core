@@ -48,7 +48,7 @@ void runWebServer(List params) {
 void main(List<String> args) {
   var arguments = getArgParser().parse(args);
 
-  var networkList = [];
+  var networkList = <String>[];
   if (arguments['network'] != null) {
     networkList = arguments['network'].split(',');
   }

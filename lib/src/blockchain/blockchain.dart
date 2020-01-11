@@ -51,13 +51,13 @@ class Blockchain {
   /// Initial a Blockchain from a network
   static Future<Blockchain> fromNetwork(List<String> networkList,
       Wallet createWallet, StorageManager storageManager) async {
-    var currentBlockchain = [];
+    var currentBlockchain = <Map>[];
     for (var node in networkList) {
       var url = node + '/blockchain/full';
       var response = await get(url);
       var receivedChain = jsonDecode(response.body) as List;
       if (receivedChain.length > currentBlockchain.length) {
-        currentBlockchain = [];
+        currentBlockchain = <Map>[];
         receivedChain.forEach((var e) {
           currentBlockchain.add(e as Map);
         });
@@ -137,7 +137,7 @@ class Blockchain {
 
   /// Return the Blockchain as a List
   List<Map<String, dynamic>> toList() {
-    var result = [];
+    var result = <Map<String, dynamic>>[];
     chain.forEach((block) {
       result.add(block.toMap());
     });

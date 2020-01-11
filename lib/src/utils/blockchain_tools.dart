@@ -42,7 +42,7 @@ int getFundsOfAddressInChain(List<Block> blockList, String address) {
 
 List<Transaction> getTransactionsOfAddress(
     List<Block> blockList, List<Map> pendingTrx, String address) {
-  var results = [];
+  var results = <Transaction>[];
 
   for (var blc in blockList) {
     for (var trx in blc.data.toList()) {

@@ -16,7 +16,7 @@ class TransactionList {
   void add(Transaction trx) => _trx.add(trx);
 
   List<Transaction> get invalidTransactions {
-    var results = [];
+    var results = <Transaction>[];
     for (var trx in _trx) {
       if (!trx.isValid) results.add(trx);
     }
@@ -28,7 +28,7 @@ class TransactionList {
   }
 
   List<Map> toList() {
-    var result = [];
+    var result = <Map>[];
     for (var trx in _trx) {
       result.add(trx.toMap());
     }
