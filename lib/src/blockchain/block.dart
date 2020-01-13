@@ -67,7 +67,7 @@ class Block {
     return depth.toString() +
         nuance.toString() +
         creator +
-        data.toString() +
+        data.toHash() +
         previousHash +
         timestamp.toString();
   }

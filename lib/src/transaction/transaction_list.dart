@@ -1,4 +1,5 @@
 import 'package:labcoin/labcoin.dart';
+import 'package:labcoin/src/utils/merkle_tree.dart';
 
 class TransactionList {
   final List<Transaction> _trx = [];
@@ -25,6 +26,15 @@ class TransactionList {
 
   bool get isValid {
     return invalidTransactions.isEmpty;
+  }
+
+  /// Get the Merkle root hash
+  String toHash() {
+    var hashes = <String>[];
+    for (var trx in _trx) {
+      hashes.add(trx.toHash());
+    }
+    return MerkleTree.getTreeRoot(hashes);
   }
 
   List<Map> toList() {
