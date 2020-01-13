@@ -1,13 +1,10 @@
 import 'dart:convert';
 import 'dart:core';
-import 'dart:math';
 
 import 'package:http/http.dart';
 import 'package:labcoin/labcoin.dart';
 
 class Blockchain {
-  int difficulty = 3;
-  int maxNonce = pow(2, 32);
   Wallet creatorWallet;
   Broadcaster broadcaster;
   StorageManager storageManager;
@@ -78,7 +75,10 @@ class Blockchain {
       var response = await get(url);
       if (response.statusCode == 200) {
         var receivedChain = jsonDecode(response.body) as List;
-        //TODO: Implement later Gotta play Video Games Now
+        var blc = Blockchain.fromList(receivedChain);
+        if (blc.length > length && blc.isValid) {
+          chain = blc.chain;
+        }
       }
     }
   }
