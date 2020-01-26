@@ -30,6 +30,9 @@ class TransactionList {
 
   /// Get the Merkle root hash
   String toHash() {
+    if (_trx.isEmpty) {
+      return '0x0';
+    }
     var hashes = <String>[];
     for (var trx in _trx) {
       hashes.add(trx.toHash());

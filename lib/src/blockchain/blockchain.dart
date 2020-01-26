@@ -105,10 +105,12 @@ class Blockchain {
   /// Create a Block and add it to the ever growing Blockchain
   void createBlock() {
     var creator = creatorWallet.publicKey.toString();
-    if (!(StakeManager.getValidator(chain) == creator)) {
+    print(StakeManager.getValidator(chain, validator: creator));
+    if (!(StakeManager.getValidator(chain, validator: creator) == creator)) {
       throw ('You are not the next Creator');
     }
     var pendingTransactions = storageManager.pendingTransactions;
+    print(pendingTransactions.toList());
     if (!pendingTransactions.isValid) {
       storageManager
           .deletePendingTransaction(pendingTransactions.invalidTransactions);
