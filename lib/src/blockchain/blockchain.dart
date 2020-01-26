@@ -96,7 +96,7 @@ class Blockchain {
   /// Add a Block to the Blockchain
   void addBlock(Block block) {
     if (block.isValid &&
-        block.creator == StakeManager.getValidator(chain) &&
+        block.creator == StakeManager.getValidator(chain, validator: block.creator) &&
         chain.last.toHash() == block.previousHash) {
       chain.add(block);
     }

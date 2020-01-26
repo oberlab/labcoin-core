@@ -2,8 +2,11 @@ import 'package:labcoin/labcoin.dart';
 
 class StakeManager {
   static String ADDRESS = '00000000000000000000000000000000000000000000';
-  static String getValidator(List<Block> blockList) {
+  static String getValidator(List<Block> blockList, {String validator}) {
     var stakeHolders = {};
+    if (validator != null) {
+      stakeHolders[validator] = 0;
+    }
     var trxList = getTransactionsOfAddress(blockList, [], ADDRESS);
     for (var trx in trxList) {
       if (trx.toAddress == ADDRESS) {
