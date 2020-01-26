@@ -10,7 +10,6 @@ class Block {
   String previousHash = '0x0';
   String creator = '';
   String signature = '';
-  int type = 0;
   int timestamp = DateTime.now().millisecondsSinceEpoch;
 
   Block(this.data, this.creator);
@@ -21,15 +20,13 @@ class Block {
         unresolvedBlock.containsKey('signature') &&
         unresolvedBlock.containsKey('timestamp') &&
         unresolvedBlock.containsKey('previousHash') &&
-        unresolvedBlock.containsKey('depth') &&
-        unresolvedBlock.containsKey('type')) {
+        unresolvedBlock.containsKey('depth')) {
       data = TransactionList.fromList(unresolvedBlock['data']);
       creator = unresolvedBlock['creator'];
       signature = unresolvedBlock['signature'];
       timestamp = unresolvedBlock['timestamp'];
       depth = unresolvedBlock['depth'];
       previousHash = unresolvedBlock['previousHash'];
-      type = unresolvedBlock['type'];
     } else {
       throw ('Some Parameter are missing!');
     }
@@ -56,7 +53,6 @@ class Block {
       'creator': creator,
       'signature': signature,
       'timestamp': timestamp,
-      'type': type,
       'depth': depth,
       'previousHash': previousHash
     };
@@ -65,7 +61,6 @@ class Block {
   @override
   String toString() {
     return depth.toString() +
-        type.toString() +
         creator +
         data.toHash() +
         previousHash +
