@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart' as crypto;
 
 class MerkleTree {
-
   static List<String> _concatHashes(List<String> hashes) {
     var results = <String>[];
     for (var i = 0; i < hashes.length; i++) {
@@ -11,7 +10,8 @@ class MerkleTree {
         var digest = crypto.sha256.convert(utf8.encode(hashes[i]));
         results.add(digest.toString());
       } else {
-        var digest = crypto.sha256.convert(utf8.encode(hashes[i] + hashes[i + 1]));
+        var digest =
+            crypto.sha256.convert(utf8.encode(hashes[i] + hashes[i + 1]));
         results.add(digest.toString());
         i++;
       }
@@ -26,5 +26,4 @@ class MerkleTree {
     }
     return hashList[0];
   }
-
 }

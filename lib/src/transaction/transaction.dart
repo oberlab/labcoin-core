@@ -79,8 +79,8 @@ class Transaction {
         _timestamp.toString();
   }
 
-  Map toMap() {
-    return {
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
       'fromAddress': _fromAddress,
       'toAddress': _toAddress,
       'amount': _amount,

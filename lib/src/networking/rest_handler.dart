@@ -13,6 +13,7 @@ import 'package:webservant/webservant.dart';
 
 const String FULL_BLOCKCHAIN = '/blockchain/:count';
 const String WALLET = '/wallet';
+const String WALLET_TRANSACTIONS = '/wallet/transactions';
 const String TRANSACTION = '/transaction';
 
 class RestHandler {
@@ -80,6 +81,18 @@ class RestHandler {
       var walletAddress = response.queryParameters['walletId'];
       response.write(jsonEncode(
           {'funds': getFundsOfAddress(storageManager, walletAddress)}));
+      response.send();
+    });
+
+    webserver.get(WALLET_TRANSACTIONS, (Response response) {
+      var walletAddress = response.queryParameters['walletId'];
+      var trxList = <Map<String, dynamic>>[];
+      getTransactionsOfAddress(
+              storageManager.BlockchainBlocks, [], walletAddress)
+          .forEach((var trx) {
+        trxList.add(trx.toMap());
+      });
+      response.write(jsonEncode({'transactions': trxList}));
       response.send();
     });
 
