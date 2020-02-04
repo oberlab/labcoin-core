@@ -120,7 +120,7 @@ class RestHandler {
       }
       var trx =
           Transaction(senderAddress, rawMap['toAddress'], rawMap['amount']);
-      trx.signTransaction(privateKey);
+      trx.sign(privateKey);
       storageManager.storePendingTransaction(trx);
       response.write('You are connected to the gitcoin chain!');
       response.send();

@@ -19,6 +19,8 @@ Future<void> runBlockchainValidator(List params) async {
     blockchain = storageManager.storedBlockchain;
     blockchain.creatorWallet = wallet;
     blockchain.broadcaster = broadcaster;
+  } else {
+    blockchain = Blockchain.newGenesis(wallet, storageManager, broadcaster: broadcaster);
   }
 
   if (!blockchain.isValid) {

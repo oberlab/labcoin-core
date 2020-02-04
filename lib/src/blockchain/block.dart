@@ -6,7 +6,7 @@ import 'package:labcoin/labcoin.dart';
 
 class Block {
   int depth = 0;
-  TransactionList data;
+  BlockData data;
   String previousHash = '0x0';
   String creator = '';
   String signature = '';
@@ -14,14 +14,17 @@ class Block {
 
   Block(this.data, this.creator);
 
-  Block.fromMap(Map unresolvedBlock) {
-    if (unresolvedBlock.containsKey('data') &&
-        unresolvedBlock.containsKey('creator') &&
-        unresolvedBlock.containsKey('signature') &&
-        unresolvedBlock.containsKey('timestamp') &&
-        unresolvedBlock.containsKey('previousHash') &&
-        unresolvedBlock.containsKey('depth')) {
-      data = TransactionList.fromList(unresolvedBlock['data']);
+  Block.fromMap(Map<String, dynamic> unresolvedBlock) {
+    if (containsKeys(unresolvedBlock, [
+      'data',
+      'creator',
+      'signature',
+      'timestamp',
+      'previousHash',
+      'depth'
+    ])) {
+      var unresolved = castProperly(unresolvedBlock['data']);
+      data = BlockData.fromList(unresolved);
       creator = unresolvedBlock['creator'];
       signature = unresolvedBlock['signature'];
       timestamp = unresolvedBlock['timestamp'];

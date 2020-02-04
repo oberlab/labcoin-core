@@ -3,6 +3,7 @@ import 'dart:core';
 
 import 'package:http/http.dart';
 import 'package:labcoin/labcoin.dart';
+import 'package:labcoin/src/blockchain/types/generic.dart';
 
 class Blockchain {
   Wallet creatorWallet;
@@ -34,11 +35,18 @@ class Blockchain {
     return true;
   }
 
-  Blockchain(this.creatorWallet, this.storageManager, {this.broadcaster}) {
-    chain.add(Block(TransactionList(), ''));
+  Blockchain(this.creatorWallet, this.storageManager, {this.broadcaster});
+
+  Blockchain.newGenesis(this.creatorWallet, this.storageManager, {this.broadcaster}) {
+    var genesisBlockData = BlockData();
+    var genesisMessage = Generic('Genesis', creatorWallet.publicKey.toString());
+    genesisMessage.sign(creatorWallet.privateKey);
+    genesisBlockData.add(genesisMessage);
+    chain.add(Block(genesisBlockData, ''));
+    save();
   }
 
-  Blockchain.fromList(List<Map> unresolvedQuery) {
+  Blockchain.fromList(List<Map<String, dynamic>> unresolvedQuery) {
     unresolvedQuery.forEach((block) {
       chain.add(Block.fromMap(block));
     });
@@ -48,15 +56,15 @@ class Blockchain {
   /// Initial a Blockchain from a network
   static Future<Blockchain> fromNetwork(List<String> networkList,
       Wallet createWallet, StorageManager storageManager) async {
-    var currentBlockchain = <Map>[];
+    var currentBlockchain = <Map<String, dynamic>>[];
     for (var node in networkList) {
       var url = node + '/blockchain/full';
       var response = await get(url);
       var receivedChain = jsonDecode(response.body) as List;
       if (receivedChain.length > currentBlockchain.length) {
-        currentBlockchain = <Map>[];
+        currentBlockchain = <Map<String, dynamic>>[];
         receivedChain.forEach((var e) {
-          currentBlockchain.add(e as Map);
+          currentBlockchain.add(e as Map<String, dynamic>);
         });
       }
     }
@@ -73,7 +81,7 @@ class Blockchain {
       var url = node + '/blockchain/-5';
       var response = await get(url);
       if (response.statusCode == 200) {
-        var receivedChain = jsonDecode(response.body) as List;
+        var receivedChain = castProperly(jsonDecode(response.body));
         var blc = Blockchain.fromList(receivedChain);
         if (blc.length > length && blc.isValid) {
           chain = blc.chain;
@@ -82,11 +90,15 @@ class Blockchain {
     }
   }
 
+  void save() {
+    storageManager.storeBlockchain(this);
+  }
+
   /// Add a Block to the Blockchain and inform other Nodes about the Update
   /// to reach Consensus
   void _addBlock(Block block) {
     chain.add(block);
-    storageManager.storeBlockchain(this);
+    save();
     if (broadcaster != null) {
       broadcaster.broadcast('/block', block.toMap());
     }
@@ -105,15 +117,13 @@ class Blockchain {
   /// Create a Block and add it to the ever growing Blockchain
   void createBlock() {
     var creator = creatorWallet.publicKey.toString();
-    print(StakeManager.getValidator(chain, validator: creator));
     if (!(StakeManager.getValidator(chain, validator: creator) == creator)) {
       throw ('You are not the next Creator');
     }
     var pendingTransactions = storageManager.pendingTransactions;
-    print(pendingTransactions.toList());
-    if (!pendingTransactions.isValid) {
+     if (!pendingTransactions.isValid) {
       storageManager
-          .deletePendingTransaction(pendingTransactions.invalidTransactions);
+          .deletePendingTransaction(pendingTransactions.invalidEntries);
       return createBlock();
     }
     var block = Block(pendingTransactions, creator);
