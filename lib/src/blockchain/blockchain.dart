@@ -37,7 +37,8 @@ class Blockchain {
 
   Blockchain(this.creatorWallet, this.storageManager, {this.broadcaster});
 
-  Blockchain.newGenesis(this.creatorWallet, this.storageManager, {this.broadcaster}) {
+  Blockchain.newGenesis(this.creatorWallet, this.storageManager,
+      {this.broadcaster}) {
     var genesisBlockData = BlockData();
     var genesisMessage = Generic('Genesis', creatorWallet.publicKey.toString());
     genesisMessage.sign(creatorWallet.privateKey);
@@ -121,7 +122,7 @@ class Blockchain {
       throw ('You are not the next Creator');
     }
     var pendingTransactions = storageManager.pendingTransactions;
-     if (!pendingTransactions.isValid) {
+    if (!pendingTransactions.isValid) {
       storageManager
           .deletePendingTransaction(pendingTransactions.invalidEntries);
       return createBlock();

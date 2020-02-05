@@ -58,7 +58,8 @@ class StorageManager {
     for (var file in files) {
       var ptrx = File(file.path);
       selectedPendingTransactions.add(ptrx);
-      results.add(Transaction.fromMap(jsonDecode(ptrx.readAsStringSync()) as Map<String, dynamic>));
+      results.add(Transaction.fromMap(
+          jsonDecode(ptrx.readAsStringSync()) as Map<String, dynamic>));
     }
     return results;
   }
@@ -83,7 +84,8 @@ class StorageManager {
     });
     for (var file in files) {
       var pblc = File(file.path);
-      var unresolved = jsonDecode(pblc.readAsStringSync()) as Map<String, dynamic>;
+      var unresolved =
+          jsonDecode(pblc.readAsStringSync()) as Map<String, dynamic>;
       results.add(Block.fromMap(unresolved));
     }
     return results;
