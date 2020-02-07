@@ -1,5 +1,6 @@
 import 'package:labcoin/labcoin.dart';
 import 'package:labcoin/src/blockchain/types/generic.dart';
+import 'package:labcoin/src/utils/merkle_tree.dart';
 
 Map<String, Function> DataConstructor = {
   Transaction.TYPE: Transaction.empty().fromMap,
@@ -31,7 +32,13 @@ class BlockData {
 
   void add(BlockDataType entry) => _entries.add(entry);
 
-  String toHash() => null;
+  String toHash() {
+    var hashes = <String>[];
+    for (var entry in _entries) {
+      hashes.add(entry.toHash());
+    }
+    return MerkleTree.getTreeRoot(hashes);
+  }
 
   List<Map<String, dynamic>> toList() {
     var result = <Map<String, dynamic>>[];

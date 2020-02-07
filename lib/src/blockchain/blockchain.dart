@@ -39,11 +39,14 @@ class Blockchain {
 
   Blockchain.newGenesis(this.creatorWallet, this.storageManager,
       {this.broadcaster}) {
-    var genesisBlockData = BlockData();
     var genesisMessage = Generic('Genesis', creatorWallet.publicKey.toString());
     genesisMessage.sign(creatorWallet.privateKey);
+    var genesisBlockData = BlockData();
     genesisBlockData.add(genesisMessage);
-    chain.add(Block(genesisBlockData, ''));
+    var genesisBlock =
+        Block(genesisBlockData, creatorWallet.publicKey.toString());
+    genesisBlock.signBlock(creatorWallet.privateKey);
+    chain.add(genesisBlock);
     save();
   }
 

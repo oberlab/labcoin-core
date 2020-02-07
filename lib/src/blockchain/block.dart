@@ -63,10 +63,12 @@ class Block {
 
   @override
   String toString() {
-    return depth.toString() +
-        creator +
-        data.toHash() +
-        previousHash +
-        timestamp.toString();
+    var stringBuffer = StringBuffer();
+    stringBuffer.write(depth);
+    stringBuffer.write(creator);
+    stringBuffer.write(data.toHash());
+    stringBuffer.write(previousHash);
+    stringBuffer.write(timestamp);
+    return stringBuffer.toString();
   }
 }
