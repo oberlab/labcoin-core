@@ -15,6 +15,7 @@ const String FULL_BLOCKCHAIN = '/blockchain/:count';
 const String WALLET = '/wallet';
 const String WALLET_TRANSACTIONS = '/wallet/transactions';
 const String TRANSACTION = '/transaction';
+const String BLOCK = '/block';
 
 class RestHandler {
   final StorageManager storageManager;
@@ -102,7 +103,16 @@ class RestHandler {
       Map rawMap = jsonDecode(content);
       var trx = Transaction.fromMap(rawMap);
       if (trx.isValid) storageManager.storePendingTransaction(trx);
-      response.write('You are connected to the gitcoin chain!');
+      response.write('You are connected to the labcoin chain!');
+      response.send();
+    });
+
+    webserver.post(BLOCK, (Response response) async {
+      var content = await response.requestData;
+      Map rawMap = jsonDecode(content);
+      var blc = Block.fromMap(rawMap);
+      if (blc.isValid) storageManager.storePendingBlock(blc);
+      response.write('You are connected to the labcoin chain!');
       response.send();
     });
 
@@ -122,7 +132,7 @@ class RestHandler {
           Transaction(senderAddress, rawMap['toAddress'], rawMap['amount']);
       trx.signTransaction(privateKey);
       storageManager.storePendingTransaction(trx);
-      response.write('You are connected to the gitcoin chain!');
+      response.write('You are connected to the labcoin chain!');
       response.send();
     });
 

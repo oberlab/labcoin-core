@@ -3,11 +3,11 @@ import 'dart:isolate';
 
 import 'package:labcoin/labcoin.dart';
 
-Future<void> runBlockchainValidator(List params) async {
-  Wallet wallet = params[0];
-  StorageManager storageManager = params[1];
-  Broadcaster broadcaster = params[2];
-  bool initOverNetwork = params[3];
+Future<void> runBlockchainValidator(ValidatorModel params) async {
+  var wallet = params.wallet;
+  var storageManager = params.storageManager;
+  var broadcaster = params.broadcaster;
+  var initOverNetwork = params.initOverNetwork;
 
   var blockchain = Blockchain(wallet, storageManager, broadcaster: broadcaster);
   if (initOverNetwork) {
@@ -38,9 +38,14 @@ Future<void> runBlockchainValidator(List params) async {
   }
 }
 
-void runWebServer(List params) {
-  StorageManager storageManager = params[0];
-  int port = params[1];
+void runWebServer(WebserverModel params) {
+  var storageManager = params.storageManager;
+  var port = params.port;
+  var getFromMainThread = ReceivePort();
+  params.sendPort.send(getFromMainThread.sendPort);
+  getFromMainThread.listen((data) {
+    print(data);
+  });
   var restHandler = RestHandler(storageManager, port);
   restHandler.run();
 }
@@ -60,7 +65,12 @@ void main(List<String> args) {
 
   if (arguments['init']) storageManager.init();
 
-  var webServer = Isolate.spawn(runWebServer, [storageManager, port]);
-  runBlockchainValidator(
-      [wallet, storageManager, broadcaster, arguments['init']]);
+  var receiveBlockchain = ReceivePort();
+  var receiveWebserver = ReceivePort();
+
+  var webServer = Isolate.spawn(
+      runWebServer,
+      WebserverModel(receiveWebserver.sendPort, port, storageManager));
+  runBlockchainValidator(ValidatorModel(receiveBlockchain.sendPort,
+       wallet, storageManager, broadcaster, arguments['init']));
 }

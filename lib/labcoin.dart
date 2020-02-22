@@ -21,3 +21,5 @@ export 'src/storage/storage_manager.dart';
 export 'src/utils/pemhelper.dart';
 export 'src/utils/blockchain_tools.dart';
 export 'src/utils/arg_parser.dart';
+export 'src/utils/model/webserver_model.dart';
+export 'src/utils/model/validator_model.dart';
