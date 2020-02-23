@@ -25,6 +25,9 @@ class Blockchain {
     for (var i = 1; i < chain.length; i++) {
       var block = chain[i];
       var currentValidator = StakeManager.getValidator(chain.sublist(0, i + 1));
+      print('previousHash: ${block.previousHash == last_block.toHash()}');
+      print('currentValidator: ${(currentValidator.isEmpty || currentValidator == block.creator)}');
+      print('block.isValid: ${block.isValid}');
       if (block.previousHash != last_block.toHash() ||
           !block.isValid ||
           !(currentValidator.isEmpty || currentValidator == block.creator)) {

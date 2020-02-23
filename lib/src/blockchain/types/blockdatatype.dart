@@ -13,6 +13,9 @@ abstract class BlockDataType {
   /// Get the Datatype of Entry
   static String get TYPE => null;
 
+  /// Get the timestamp for Entry
+  int get timestamp => null;
+
   /// Returns if the Entry is valid
   bool get isValid => null;
 

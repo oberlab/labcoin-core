@@ -35,6 +35,9 @@ class Generic extends BlockDataType {
   static String get TYPE => 'GENERIC';
 
   @override
+  int get timestamp => _timestamp;
+
+  @override
   bool get isValid {
     var publicKey = ECPublicKey.fromString(_fromAddress);
     return publicKey.verifySignature(toHash(), _signature);

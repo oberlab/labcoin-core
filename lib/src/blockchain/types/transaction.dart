@@ -16,6 +16,7 @@ class Transaction extends BlockDataType {
   String get toAddress => _toAddress;
   String get fromAddress => _fromAddress;
   int get amount => _amount;
+  @override
   int get timestamp => _timestamp;
 
   static String get TYPE => 'TRANSACTION';

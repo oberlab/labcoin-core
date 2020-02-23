@@ -34,6 +34,7 @@ class BlockData {
 
   String toHash() {
     var hashes = <String>[];
+    _entries.sort((var a, var b) => a.timestamp.compareTo(b.timestamp));
     for (var entry in _entries) {
       hashes.add(entry.toHash());
     }
@@ -42,6 +43,7 @@ class BlockData {
 
   List<Map<String, dynamic>> toList() {
     var result = <Map<String, dynamic>>[];
+    _entries.sort((var a, var b) => a.timestamp.compareTo(b.timestamp));
     for (var entry in _entries) {
       result.add(entry.toMap());
     }

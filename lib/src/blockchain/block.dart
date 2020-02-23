@@ -45,10 +45,7 @@ class Block {
     signature = privateKey.createSignature(toHash());
   }
 
-  String toHash() {
-    var digest = crypto.sha256.convert(utf8.encode(toString()));
-    return digest.toString();
-  }
+  String toHash() => crypto.sha256.convert(utf8.encode(toString())).toString();
 
   Map<String, dynamic> toMap() {
     return {
@@ -63,12 +60,6 @@ class Block {
 
   @override
   String toString() {
-    var stringBuffer = StringBuffer();
-    stringBuffer.write(depth);
-    stringBuffer.write(creator);
-    stringBuffer.write(data.toHash());
-    stringBuffer.write(previousHash);
-    stringBuffer.write(timestamp);
-    return stringBuffer.toString();
+    return '$depth:$creator:${data.toHash()}:$previousHash:$timestamp';
   }
 }
