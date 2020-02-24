@@ -2,10 +2,14 @@ import 'package:labcoin/labcoin.dart';
 import 'package:labcoin/src/blockchain/types/generic.dart';
 import 'package:labcoin/src/utils/merkle_tree.dart';
 
-Map<String, Function> DataConstructor = {
-  Transaction.TYPE: Transaction.empty().fromMap,
-  Generic.TYPE: Generic.empty().fromMap
-};
+BlockDataType getBlockDataType(String type, Map<String, dynamic> map) {
+  if(type == Transaction.TYPE) {
+    return Transaction.fromMap(map);
+  } else if(type == Generic.TYPE) {
+    return Generic.fromMap(map);
+  }
+  return null;
+}
 
 class BlockData {
   final List<BlockDataType> _entries = <BlockDataType>[];
@@ -14,7 +18,8 @@ class BlockData {
 
   BlockData.fromList(List<Map<String, dynamic>> list) {
     for (var entry in list) {
-      _entries.add(DataConstructor[entry['type']](entry));
+      var entryElement = getBlockDataType(entry['type'], entry);
+      if (entryElement != null) _entries.add(entryElement);
     }
   }
 

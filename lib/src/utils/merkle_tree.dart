@@ -19,8 +19,8 @@ class MerkleTree {
     return results;
   }
 
-  static String getTreeRoot(List<String> hashes) {
-    var hashList = hashes;
+  static String getTreeRoot(List<String> leaves) {
+    var hashList = leaves;
     while (hashList.length > 1) {
       hashList = _concatHashes(hashList);
     }
