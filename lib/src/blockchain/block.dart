@@ -6,7 +6,7 @@ import 'package:labcoin/labcoin.dart';
 
 class Block {
   int depth = 0;
-  TransactionList data;
+  BlockData data;
   String previousHash = '0x0';
   String creator = '';
   String signature = '';
@@ -14,14 +14,17 @@ class Block {
 
   Block(this.data, this.creator);
 
-  Block.fromMap(Map unresolvedBlock) {
-    if (unresolvedBlock.containsKey('data') &&
-        unresolvedBlock.containsKey('creator') &&
-        unresolvedBlock.containsKey('signature') &&
-        unresolvedBlock.containsKey('timestamp') &&
-        unresolvedBlock.containsKey('previousHash') &&
-        unresolvedBlock.containsKey('depth')) {
-      data = TransactionList.fromList(unresolvedBlock['data']);
+  Block.fromMap(Map<String, dynamic> unresolvedBlock) {
+    if (containsKeys(unresolvedBlock, [
+      'data',
+      'creator',
+      'signature',
+      'timestamp',
+      'previousHash',
+      'depth'
+    ])) {
+      var unresolved = castProperly(unresolvedBlock['data']);
+      data = BlockData.fromList(unresolved);
       creator = unresolvedBlock['creator'];
       signature = unresolvedBlock['signature'];
       timestamp = unresolvedBlock['timestamp'];
@@ -42,10 +45,7 @@ class Block {
     signature = privateKey.createSignature(toHash());
   }
 
-  String toHash() {
-    var digest = crypto.sha256.convert(utf8.encode(toString()));
-    return digest.toString();
-  }
+  String toHash() => crypto.sha256.convert(utf8.encode(toString())).toString();
 
   Map<String, dynamic> toMap() {
     return {
@@ -60,10 +60,6 @@ class Block {
 
   @override
   String toString() {
-    return depth.toString() +
-        creator +
-        data.toHash() +
-        previousHash +
-        timestamp.toString();
+    return '$depth:$creator:${data.toHash()}:$previousHash:$timestamp';
   }
 }

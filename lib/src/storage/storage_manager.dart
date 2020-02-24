@@ -57,13 +57,14 @@ class StorageManager {
     }
   }
 
-  TransactionList get pendingTransactions {
-    var results = TransactionList();
+  BlockData get pendingTransactions {
+    var results = BlockData();
     var files = _pendingTransactions.listSync();
     for (var file in files) {
       var ptrx = File(file.path);
       selectedPendingTransactions.add(ptrx);
-      results.add(Transaction.fromMap(jsonDecode(ptrx.readAsStringSync())));
+      results.add(Transaction.fromMap(
+          jsonDecode(ptrx.readAsStringSync()) as Map<String, dynamic>));
     }
     return results;
   }
@@ -120,13 +121,15 @@ class StorageManager {
     });
     for (var file in files) {
       var pblc = File(file.path);
-      results.add(Block.fromMap(jsonDecode(pblc.readAsStringSync())));
+      var unresolved =
+          jsonDecode(pblc.readAsStringSync()) as Map<String, dynamic>;
+      results.add(Block.fromMap(unresolved));
     }
     return results;
   }
 
   Blockchain get storedBlockchain {
-    var results = <Map>[];
+    var results = <Map<String, dynamic>>[];
     var files = blockchain.listSync();
     files.sort((a, b) {
       var aName = a.path.split('\\').last.replaceAll('.blc', '');
@@ -138,7 +141,7 @@ class StorageManager {
     });
     for (var file in files) {
       var pblc = File(file.path);
-      results.add(jsonDecode(pblc.readAsStringSync()));
+      results.add(jsonDecode(pblc.readAsStringSync()) as Map<String, dynamic>);
     }
     var blc = Blockchain.fromList(results);
     blc.storageManager = this;

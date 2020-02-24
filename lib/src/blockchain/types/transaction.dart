@@ -6,7 +6,7 @@ import 'package:labcoin/labcoin.dart';
 
 const String GENERATED_ADDRESS = '11111111111111111111111111111111111111111111';
 
-class Transaction {
+class Transaction extends BlockDataType {
   String _fromAddress;
   String _toAddress;
   int _amount;
@@ -16,9 +16,13 @@ class Transaction {
   String get toAddress => _toAddress;
   String get fromAddress => _fromAddress;
   int get amount => _amount;
+  @override
   int get timestamp => _timestamp;
 
+  static String get TYPE => 'TRANSACTION';
+
   /// Returns if the Transaction is valid
+  @override
   bool get isValid {
     if (_fromAddress == StakeManager.ADDRESS) {
       return true;
@@ -41,12 +45,17 @@ class Transaction {
   }
 
   Transaction(this._fromAddress, this._toAddress, this._amount);
-  Transaction.fromMap(Map unresolvedTransaction) {
-    if (unresolvedTransaction.containsKey('fromAddress') &&
-        unresolvedTransaction.containsKey('toAddress') &&
-        unresolvedTransaction.containsKey('amount') &&
-        unresolvedTransaction.containsKey('signature') &&
-        unresolvedTransaction.containsKey('timestamp')) {
+
+  Transaction.empty();
+
+  Transaction.fromMap(Map<String, dynamic> unresolvedTransaction) {
+    fromMap(unresolvedTransaction);
+  }
+
+  @override
+  Transaction fromMap(Map<String, dynamic> unresolvedTransaction) {
+    if (containsKeys(unresolvedTransaction,
+        ['fromAddress', 'toAddress', 'amount', 'signature', 'timestamp'])) {
       _fromAddress = unresolvedTransaction['fromAddress'];
       if (_fromAddress == 'null') {
         _fromAddress = null;
@@ -61,31 +70,29 @@ class Transaction {
     } else {
       throw ('Some Parameters are missing!');
     }
-  }
-
-  void signTransaction(PrivateKey privateKey) {
-    _signature = privateKey.createSignature(toHash());
-  }
-
-  String toHash() {
-    return sha256.convert(utf8.encode(toString())).toString();
+    return this;
   }
 
   @override
-  String toString() {
-    return _fromAddress.toString() +
-        _toAddress.toString() +
-        _amount.toString() +
-        _timestamp.toString();
+  void sign(PrivateKey privateKey) {
+    _signature = privateKey.createSignature(toHash());
   }
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'fromAddress': _fromAddress,
-      'toAddress': _toAddress,
-      'amount': _amount,
-      'signature': _signature,
-      'timestamp': _timestamp
-    };
+  @override
+  String toHash() => sha256.convert(utf8.encode(toString())).toString();
+
+  @override
+  String toString() {
+    return '$_fromAddress:$_toAddress:${_amount.toString()}:${_timestamp.toString()}';
   }
+
+  @override
+  Map<String, dynamic> toMap() => <String, dynamic>{
+        'type': TYPE,
+        'fromAddress': _fromAddress,
+        'toAddress': _toAddress,
+        'amount': _amount,
+        'signature': _signature,
+        'timestamp': _timestamp
+      };
 }
