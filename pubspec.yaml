@@ -10,9 +10,7 @@ environment:
 dependencies:
   args: ^1.5.2
   crypto: ^2.1.3
-  merkletree: ^1.0.3
   http: ^0.12.0+2
-  json_rpc_2: ^2.1.0
   crypton: ^1.0.1
   webservant: ^0.1.1
 
