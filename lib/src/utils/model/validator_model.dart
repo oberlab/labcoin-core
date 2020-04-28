@@ -9,6 +9,6 @@ class ValidatorModel {
   final Broadcaster broadcaster;
   final bool initOverNetwork;
 
-  ValidatorModel(this.sendPort, this.wallet,
-      this.storageManager, this.broadcaster, this.initOverNetwork);
+  ValidatorModel(this.sendPort, this.wallet, this.storageManager,
+      this.broadcaster, this.initOverNetwork);
 }

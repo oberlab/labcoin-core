@@ -4,8 +4,9 @@ library labcoin;
 export 'src/blockchain/block.dart';
 export 'src/blockchain/blockchain.dart';
 export 'src/blockchain/stake_manager.dart';
-export 'src/blockchain/types/blockdatatype.dart';
 export 'src/blockchain/block_data.dart';
+export 'src/blockchain/types/blockdatatype.dart';
+export 'src/blockchain/mempool.dart';
 
 // Transactions
 export 'src/blockchain/types/transaction.dart';

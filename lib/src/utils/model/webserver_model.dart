@@ -7,6 +7,5 @@ class WebserverModel {
   final int port;
   final StorageManager storageManager;
 
-  WebserverModel(
-      this.sendPort, this.port, this.storageManager);
+  WebserverModel(this.sendPort, this.port, this.storageManager);
 }

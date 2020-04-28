@@ -9,7 +9,7 @@ Future<void> runBlockchainValidator(ValidatorModel params) async {
   var broadcaster = params.broadcaster;
   var initOverNetwork = params.initOverNetwork;
 
-  var blockchain = Blockchain(wallet, storageManager, broadcaster: broadcaster);
+  var blockchain = Blockchain(wallet, storageManager: storageManager, broadcaster: broadcaster);
   if (initOverNetwork) {
     print('Loading Blockchain from the Network');
     blockchain =
@@ -20,7 +20,7 @@ Future<void> runBlockchainValidator(ValidatorModel params) async {
     blockchain.creatorWallet = wallet;
     blockchain.broadcaster = broadcaster;
   } else {
-    blockchain = Blockchain.newGenesis(wallet, storageManager, broadcaster: broadcaster);
+    blockchain = Blockchain.newGenesis(wallet, storageManager: storageManager, broadcaster: broadcaster);
   }
 
   if (!blockchain.isValid) {
