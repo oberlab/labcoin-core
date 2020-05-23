@@ -74,6 +74,7 @@ class RestService {
   }
 
   void handleGetMemPoolTransactions(Response response) {
+    response.addHeader('content-type', 'application/json');
     var memPoolTrx = <Map<String, dynamic>>[];
     for (var trx in memPool.unconfirmedTransactions) {
       memPoolTrx.add(trx.toMap());
@@ -99,6 +100,7 @@ class RestService {
   }
 
   void handleAddBlock(Response response) async {
+    response.addHeader('content-type', 'application/json');
     var content = await response.requestData;
     Map rawMap = jsonDecode(content);
     var block = Block.fromMap(rawMap);
@@ -107,6 +109,7 @@ class RestService {
   }
 
   void handleGetBlock(Response response) async {
+    response.addHeader('content-type', 'application/json');
     var identifier = response.urlParams['identifier'];
     Block block;
     if (isNumeric(identifier)) {
@@ -119,6 +122,7 @@ class RestService {
   }
 
   void handleGetWallet(Response response) async {
+    response.addHeader('content-type', 'application/json');
     var address = response.urlParams['address'];
     var funds = getFundsOfAddress(blockchain, memPool, address);
     var transactions = getTransactionsOfAddress(blockchain, address)
@@ -135,6 +139,7 @@ class RestService {
   }
 
   void handleGetFullBlockchain(Response response) {
+    response.addHeader('content-type', 'application/json');
     var count = response.urlParams['count'];
     if (count.toLowerCase() == 'full') {
       response.write(jsonEncode(blockchain.toList()));
@@ -166,6 +171,7 @@ class RestService {
   }
 
   void handleGetBlockchainInfo(Response response) {
+    response.addHeader('content-type', 'application/json');
     var firstBlock = blockchain.chain.first;
     var lastBlock = blockchain.last;
 
