@@ -26,3 +26,9 @@ bool isNumeric(String s) {
     return false;
   }
 }
+
+enum BlockchainVariants {
+  network,
+  genesis,
+  local
+}

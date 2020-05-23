@@ -9,10 +9,10 @@ import 'package:webservant/webservant.dart';
 class RestUrl {
   static final NODE = '/node';
 
+  static final BLOCKCHAIN = '/blockchain';
   static final FULL_BLOCKCHAIN = '/blockchain/:count';
-  static final WALLET = '/wallet';
-  static final WALLET_TRANSACTIONS = '/wallet/transactions';
-  static final TRANSACTION_GET_HASH = '/transaction/:hash';
+  static final WALLET = '/wallet/:address';
+  // static final TRANSACTION_GET_HASH = '/transaction/:hash';
 
   static final MEMPOOL_TRANSACTIONS = '/mempool/transactions';
   static final TRANSACTION = '/transaction';
@@ -39,6 +39,9 @@ class RestService {
     webServer.post(RestUrl.BLOCK, handleAddBlock);
     webServer.get(RestUrl.BLOCK_GET, handleGetBlock);
 
+    webServer.get(RestUrl.WALLET, handleGetWallet);
+
+    webServer.get(RestUrl.BLOCKCHAIN, handleGetBlockchainInfo);
     webServer.get(RestUrl.FULL_BLOCKCHAIN, handleGetFullBlockchain);
 
     webServer.run();
@@ -62,7 +65,7 @@ class RestService {
           publicKey.verifySignature(sigString, header.value('walletSig'));
 
       if (hasValidSig) {
-        network.registerNode(walletAddress, '$remoteAddress:$remotePort');
+        network.registerReceiveNode(walletAddress, '$remoteAddress:$remotePort');
         response.write('Node registerd successfully.');
       }
     }
@@ -115,6 +118,22 @@ class RestService {
     response.send();
   }
 
+  void handleGetWallet(Response response) async {
+    var address = response.urlParams['address'];
+    var funds = getFundsOfAddress(blockchain, memPool, address);
+    var transactions = getTransactionsOfAddress(blockchain, address)
+        .map((var trx) => trx.toMap()).toList();
+    var memPoolTransactions = getMemPoolTransactionsOfAddress(memPool, address)
+        .map((var trx) => trx.toMap()).toList();
+    response.write(jsonEncode({
+      'address': address,
+      'funds': funds,
+      'transactions': transactions,
+      'memPoolTransactions': memPoolTransactions
+    }));
+    response.send();
+  }
+
   void handleGetFullBlockchain(Response response) {
     var count = response.urlParams['count'];
     if (count.toLowerCase() == 'full') {
@@ -130,8 +149,7 @@ class RestService {
             .toList()));
       } else {
         response.statusCode = 400;
-        response.write(
-            jsonEncode({'message': 'Please specify the count as integer'}));
+        response.write({'message': 'Please specify the count as integer'});
       }
     } else {
       if (isNumeric(count) && int.parse(count) <= blockchain.length) {
@@ -145,5 +163,17 @@ class RestService {
       }
     }
     response.send();
+  }
+
+  void handleGetBlockchainInfo(Response response) {
+    var firstBlock = blockchain.chain.first;
+    var lastBlock = blockchain.last;
+
+    response.write(jsonEncode({
+      'firstBlock': firstBlock.toMap(),
+      'lastBlock': lastBlock.toMap(),
+      'proofOfWorkChar': blockchain.proofOfWorkChar,
+      'difficulty': blockchain.difficulty
+    }));
   }
 }

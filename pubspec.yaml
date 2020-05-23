@@ -1,5 +1,5 @@
 name: labcoin
-description: A Cryptocurrency for Oberlab Holzkirchen
+description: The Labcoin full Node written in Dartlang
 version: 0.0.3
 author: Konstantin Ullrich <konstantinullrich12@gmail.com>
 # homepage: https://www.example.com

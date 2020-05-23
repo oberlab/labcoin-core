@@ -10,7 +10,6 @@ import 'package:labcoin/labcoin.dart';
 class StorageManager {
   final String folderPath;
   Directory _pendingTransactions;
-  Directory _pendingBlocks;
   Directory blockchain;
   List<File> selectedPendingTransactions = [];
   List<File> selectedPendingBlocks = [];
@@ -20,11 +19,9 @@ class StorageManager {
     if (!directory.existsSync()) directory.createSync(recursive: true);
 
     _pendingTransactions = Directory('${directory.path}/pendingTransactions');
-    _pendingBlocks = Directory('${directory.path}/pendingBlocks');
     blockchain = Directory('${directory.path}/blockchain');
 
     if (!_pendingTransactions.existsSync()) _pendingTransactions.createSync();
-    if (!_pendingBlocks.existsSync()) _pendingBlocks.createSync();
     if (!blockchain.existsSync()) blockchain.createSync();
   }
 
@@ -35,11 +32,9 @@ class StorageManager {
     directory.createSync();
 
     _pendingTransactions = Directory('${directory.path}/pendingTransactions');
-    _pendingBlocks = Directory('${directory.path}/pendingBlocks');
     blockchain = Directory('${directory.path}/blockchain');
 
     _pendingTransactions.createSync();
-    _pendingBlocks.createSync();
     blockchain.createSync();
   }
 
@@ -74,38 +69,6 @@ class StorageManager {
     var file = File('${_pendingTransactions.path}/$filename');
     if (!file.existsSync()) file.createSync();
     file.writeAsStringSync(jsonEncode(trx.toMap()));
-  }
-
-  void deletePendingBlocks() {
-    for (var file in selectedPendingBlocks) {
-      file.delete();
-    }
-  }
-
-  void deletePendingBlock(List<Transaction> listToDelete) {
-    for (var trx in listToDelete) {
-      var filename = '${trx.toHash()}.trx';
-      var file = File('${_pendingBlocks.path}/$filename');
-      if (file.existsSync()) file.delete();
-    }
-  }
-
-  List<Block> get pendingBlocks {
-    var results = <Block>[];
-    var files = _pendingBlocks.listSync();
-    for (var file in files) {
-      var ptrx = File(file.path);
-      selectedPendingBlocks.add(ptrx);
-      results.add(Block.fromMap(jsonDecode(ptrx.readAsStringSync())));
-    }
-    return results;
-  }
-
-  void storePendingBlock(Block blc) {
-    var filename = '${blc.height}.blc';
-    var file = File('${_pendingBlocks.path}/$filename');
-    if (!file.existsSync()) file.createSync();
-    file.writeAsStringSync(jsonEncode(blc.toMap()));
   }
 
   List<Block> get BlockchainBlocks {

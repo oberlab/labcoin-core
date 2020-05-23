@@ -23,7 +23,7 @@ void main() {
     Blockchain blockchain;
 
     setUp(() {
-      blockchain = Blockchain(Wallet.fromRandom());
+      blockchain = Blockchain();
     });
 
     test('Calculate the correct proof of work requirement', () {
