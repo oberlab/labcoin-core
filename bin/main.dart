@@ -1,68 +1,86 @@
+
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:labcoin/labcoin.dart';
 
-Future<void> runBlockchainValidator(List params) async {
-  Wallet wallet = params[0];
-  StorageManager storageManager = params[1];
-  Broadcaster broadcaster = params[2];
-  bool initOverNetwork = params[3];
+// --private-key, -pK
+// --network, -n
+// --port, -p
+// --init-storage
+// --storage -s
+// --mempool-age, -mA
+// --variant
 
-  var blockchain = Blockchain(wallet, storageManager, broadcaster: broadcaster);
-  if (initOverNetwork) {
-    print('Loading Blockchain from the Network');
-    blockchain =
-        await Blockchain.fromNetwork(broadcaster.nodes, wallet, storageManager);
-  } else if (storageManager.BlockchainBlocks.isNotEmpty) {
-    print('Loading existing Blockchain');
-    blockchain = storageManager.storedBlockchain;
-    blockchain.creatorWallet = wallet;
-    blockchain.broadcaster = broadcaster;
-  } else {
-    blockchain = Blockchain.newGenesis(wallet, storageManager, broadcaster: broadcaster);
-  }
+Future<void> main(List<String> args) async {
+  var memPoolAge = 10000;
+  var port = 3000;
+  var difficulty = 3;
+  var network = Network();
+  var storage;
+  var blockchain = Blockchain();
 
-  if (!blockchain.isValid) {
-    print('The Blockchain is invalid!');
-    return;
-  }
-
-  while (true) {
-    if (storageManager.pendingTransactions.length > 2) {
-      print('Start mining a Block');
-      final stopwatch = Stopwatch()..start();
-      blockchain.createBlock();
-      print('The mining Process was completed in ${stopwatch.elapsed}');
-    } else {
-      sleep(Duration(seconds: 10));
-    }
-  }
-}
-
-void runWebServer(List params) {
-  StorageManager storageManager = params[0];
-  int port = params[1];
-  var restHandler = RestHandler(storageManager, port);
-  restHandler.run();
-}
-
-void main(List<String> args) {
   var arguments = getArgParser().parse(args);
 
-  var networkList = <String>[];
-  if (arguments['network'] != null) {
-    networkList = arguments['network'].split(',');
+  if (arguments['help']) {
+    print('Labcoin Full Node Help\n\$ labcoin\n\nOptions:');
+    print(getArgParser().usage);
+    exit(0);
   }
-  var broadcaster = Broadcaster(networkList);
 
-  var port = int.parse(arguments['port']);
-  var storageManager = StorageManager(arguments['storage']);
-  var wallet = Wallet(arguments['private-key']);
+  if (isNumeric(arguments['mempool-age'])) {
+    memPoolAge = int.parse(arguments['mempool-age']);
+  }
 
-  if (arguments['init']) storageManager.init();
+  if (isNumeric(arguments['port'])) {
+    port = int.parse(arguments['port']);
+  }
 
-  var webServer = Isolate.spawn(runWebServer, [storageManager, port]);
-  runBlockchainValidator(
-      [wallet, storageManager, broadcaster, arguments['init']]);
+  if (arguments['storage'] != null) {
+    storage = StorageManager(arguments['storage']);
+  }
+
+  if (arguments['network'] != null) {
+    var nodes = arguments['network'].toString().split(',');
+    for (var node in nodes) {
+      network.registerRequestNode(node);
+    }
+  }
+
+  var variant = BlockchainVariants.values.firstWhere((e) => e.toString() == 'BlockchainVariants.' + arguments['variant']);
+
+  if (variant == BlockchainVariants.genesis){
+    if (arguments['private-key'] != null) {
+      storage.init();
+      blockchain = Blockchain.newGenesis(Wallet(arguments['private-key']),
+          difficulty: difficulty, storageManager: storage);
+    } else {
+      print('You need a private key to create the genesis Block!');
+      exit(1);
+    }
+  } else if(variant == BlockchainVariants.network) {
+    if (network.requestNodes.isNotEmpty) {
+      storage.init();
+      blockchain = await Blockchain.fromNetwork(network, storageManager: storage,
+          difficulty: difficulty);
+    } else {
+      print('You need at least one Node in the Network!');
+      exit(1);
+    }
+  } else if (variant == BlockchainVariants.local) {
+    if (storage != null) {
+      blockchain = Blockchain(storageManager: storage, difficulty: difficulty);
+      blockchain.chain = storage.storedBlockchain.chain;
+    } else {
+      print('You need to provide a path to the saved blockchain.');
+      exit(1);
+    }
+  } else {
+    print('${arguments['variant']} is not valid. Please select a valid variant of genesis, network, local');
+    exit(1);
+  }
+  
+  var memPool = MemPool(memPoolAge, network);
+  var restService = RestService(blockchain, memPool, network, port: port);
+
+  restService.run();
 }

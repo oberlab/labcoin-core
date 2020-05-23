@@ -2,6 +2,8 @@
 
 The Oberlab local cryptocurrency.
 
+Labcoin utilizes a SHA256 Proof of Work Algorithm
+
 > A Blockchain explorer is avaliable at https://github.com/mowolf/gitcoin-frontend
 
 
@@ -26,3 +28,6 @@ Labcoin uses various libraries to improve the development process:
 
 To build the project, you need:
 - [Dart Sdk](https://dart.dev/get-dart)
+
+# ToDo
+[ ] Add Tool to Sign Messages

@@ -24,15 +24,7 @@ class Transaction extends BlockDataType {
   /// Returns if the Transaction is valid
   @override
   bool get isValid {
-    if (_fromAddress == StakeManager.ADDRESS) {
-      return true;
-    } // We assume it is a Stake repayment
-
-    if (_fromAddress == GENERATED_ADDRESS) {
-      return true;
-    } // We assume it is a generated token
-
-    if (_signature == StakeManager.ADDRESS || _signature.isEmpty) {
+    if (_signature.isEmpty) {
       throw ('No signature in this transaction');
     }
 

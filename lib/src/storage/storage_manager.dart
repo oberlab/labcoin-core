@@ -113,7 +113,7 @@ class StorageManager {
 
   void storeBlockchain(Blockchain blc_chn) {
     for (var blc in blc_chn.chain) {
-      var filename = '${blc.depth}.blc';
+      var filename = '${blc.height}.blc';
       var file = File('${blockchain.path}/$filename');
       if (!file.existsSync()) {
         file.createSync();

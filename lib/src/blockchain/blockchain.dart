@@ -4,30 +4,44 @@ import 'dart:core';
 import 'package:http/http.dart';
 import 'package:labcoin/labcoin.dart';
 import 'package:labcoin/src/blockchain/types/generic.dart';
+import 'package:labcoin/src/networking/network.dart';
 
 class Blockchain {
-  Wallet creatorWallet;
-  Broadcaster broadcaster;
+  Network network;
   StorageManager storageManager;
   List<Block> chain = [];
+  int difficulty = 0;
+  final String proofOfWorkChar = '0';
+
+  /// Return the proof of work requirement
+  String get workRequirement {
+    var requirement = StringBuffer();
+    for (var i = 0; i < difficulty; i++) {
+      requirement.write(proofOfWorkChar);
+    }
+    return requirement.toString();
+  }
+
+  /// if the Blockchain should be persistent
+  bool get isPersistent => storageManager != null;
 
   /// Returns the Hash of the last Block of the Blockchain
-  String get _previousHash => chain.last.toHash();
+  String get _previousHash => last.toHash();
 
   /// Returns the number of objects in this list.
-  ///
   /// The valid indices for a list are `0` through `length - 1`.
   int get length => chain.length;
+
+  Block get last => chain.last;
 
   /// Returns if the Blockchain is valid
   bool get isValid {
     var last_block = chain.first;
     for (var i = 1; i < chain.length; i++) {
       var block = chain[i];
-      var currentValidator = StakeManager.getValidator(chain.sublist(0, i + 1));
       if (block.previousHash != last_block.toHash() ||
           !block.isValid ||
-          !(currentValidator.isEmpty || currentValidator == block.creator)) {
+          !block.toHash().startsWith(workRequirement)) {
         return false;
       }
       last_block = block;
@@ -35,33 +49,42 @@ class Blockchain {
     return true;
   }
 
-  Blockchain(this.creatorWallet, this.storageManager, {this.broadcaster});
+  Blockchain({this.storageManager, this.network, this.difficulty = 3});
 
-  Blockchain.newGenesis(this.creatorWallet, this.storageManager,
-      {this.broadcaster}) {
-    var genesisMessage = Generic('Genesis', creatorWallet.publicKey.toString());
-    genesisMessage.sign(creatorWallet.privateKey);
-    var genesisBlockData = BlockData();
-    genesisBlockData.add(genesisMessage);
-    var genesisBlock =
-        Block(genesisBlockData, creatorWallet.publicKey.toString());
-    genesisBlock.signBlock(creatorWallet.privateKey);
-    chain.add(genesisBlock);
+  /// Create a new Blockchain with a Genesis Block
+  Blockchain.newGenesis(Wallet creatorWallet, {this.storageManager, this.network, this.difficulty = 3, int defaultMint = 1000000000000}) {
+    var message = Generic('Genesis', creatorWallet.publicKey.toString());
+    message.sign(creatorWallet.privateKey);
+
+    var trx = Transaction(GENERATED_ADDRESS, creatorWallet.publicKey.toString(), defaultMint);
+    trx.sign(creatorWallet.privateKey);
+
+
+    var blockData = BlockData();
+    blockData.add(message);
+    blockData.add(trx);
+
+    var block = Block(blockData, creatorWallet.publicKey.toString());
+    block.signBlock(creatorWallet.privateKey);
+
+    chain.add(block);
     save();
   }
 
-  Blockchain.fromList(List<Map<String, dynamic>> unresolvedQuery) {
-    unresolvedQuery.forEach((block) {
+  Blockchain.fromList(List<Map<String, dynamic>> unresolvedBlockchain,
+      {this.storageManager, this.network, this.difficulty = 3}) {
+    unresolvedBlockchain.forEach((block) {
       chain.add(Block.fromMap(block));
     });
-    chain.sort((Block a, Block b) => a.depth.compareTo(b.depth));
+    chain.sort((Block a, Block b) => a.height.compareTo(b.height));
+    save();
   }
 
-  /// Initial a Blockchain from a network
-  static Future<Blockchain> fromNetwork(List<String> networkList,
-      Wallet createWallet, StorageManager storageManager) async {
+  /// Initialize a Blockchain from a network
+  static Future<Blockchain> fromNetwork(Network network,
+      {StorageManager storageManager, int difficulty = 3}) async {
     var currentBlockchain = <Map<String, dynamic>>[];
-    for (var node in networkList) {
+    for (var node in network.requestNodes) {
       var url = node + '/blockchain/full';
       var response = await get(url);
       var receivedChain = jsonDecode(response.body) as List;
@@ -72,16 +95,16 @@ class Blockchain {
         });
       }
     }
-    var blockchain = Blockchain.fromList(currentBlockchain);
-    blockchain.creatorWallet = createWallet;
-    blockchain.storageManager = storageManager;
-    blockchain.broadcaster = Broadcaster(networkList);
-    storageManager.storeBlockchain(blockchain);
+    var blockchain = Blockchain.fromList(currentBlockchain,
+        storageManager: storageManager,
+        network: network,
+        difficulty: difficulty
+    );
     return blockchain;
   }
 
   Future updateFromNetwork() async {
-    for (var node in broadcaster.nodes) {
+    for (var node in network.requestNodes) {
       var url = node + '/blockchain/-5';
       var response = await get(url);
       if (response.statusCode == 200) {
@@ -95,48 +118,39 @@ class Blockchain {
   }
 
   void save() {
-    storageManager.storeBlockchain(this);
-  }
-
-  /// Add a Block to the Blockchain and inform other Nodes about the Update
-  /// to reach Consensus
-  void _addBlock(Block block) {
-    chain.add(block);
-    save();
-    if (broadcaster != null) {
-      broadcaster.broadcast('/block', block.toMap());
+    if (isPersistent) {
+      storageManager.storeBlockchain(this);
     }
   }
 
-  /// Add a Block to the Blockchain
+  /// Add a valid Block to the Blockchain
   void addBlock(Block block) {
-    if (block.isValid &&
-        block.creator ==
-            StakeManager.getValidator(chain, validator: block.creator) &&
-        chain.last.toHash() == block.previousHash) {
-      chain.add(block);
+    if (block.isValid && block.height >= length
+        && block.toHash().startsWith(workRequirement)
+        && _previousHash == block.previousHash) {
+        chain.add(block);
+        save();
+        network.broadcast('/block', block.toMap());
     }
   }
 
   /// Create a Block and add it to the ever growing Blockchain
-  void createBlock() {
-    var creator = creatorWallet.publicKey.toString();
-    if (!(StakeManager.getValidator(chain, validator: creator) == creator)) {
-      throw ('You are not the next Creator');
-    }
-    var pendingTransactions = storageManager.pendingTransactions;
-    if (!pendingTransactions.isValid) {
-      storageManager
-          .deletePendingTransaction(pendingTransactions.invalidEntries);
-      return createBlock();
-    }
-    var block = Block(pendingTransactions, creator);
-    block.previousHash = _previousHash;
-    block.depth = length;
-    block.signBlock(creatorWallet.privateKey);
-    _addBlock(block);
-    storageManager.deletePendingTransactions();
-  }
+//  @deprecated
+//  void createBlock() {
+//    var creator = creatorWallet.publicKey.toString();
+//    var pendingTransactions = storageManager.pendingTransactions;
+//    if (!pendingTransactions.isValid) {
+//      storageManager
+//          .deletePendingTransaction(pendingTransactions.invalidEntries);
+//      return createBlock();
+//    }
+//    var block = Block(pendingTransactions, creator);
+//    block.previousHash = _previousHash;
+//    block.height = length;
+//    block.signBlock(creatorWallet.privateKey);
+//    _addBlock(block);
+//    storageManager.deletePendingTransactions();
+//  }
 
   /// Resolve Conflicts occurred in any other process
   bool resolveConflicts(List<Blockchain> chains) {
@@ -151,6 +165,25 @@ class Blockchain {
     return isThisChain;
   }
 
+  /// Get a Block based on the Blockheight
+  Block getBlockByHeight(int height) {
+    if (height < length) {
+      height -= 1;
+      return chain[height];
+    }
+    return null;
+  }
+
+  /// Get a Block based on the Blockhash
+  Block getBlockByHash(String hash) {
+    for (var block in chain) {
+      if (block.toHash() == hash) {
+        return block;
+      }
+    }
+    return null;
+  }
+
   /// Return the Blockchain as a List
   List<Map<String, dynamic>> toList() {
     var result = <Map<String, dynamic>>[];
@@ -163,17 +196,6 @@ class Blockchain {
   /// Return the Blockchain as Valid JSON String
   @override
   String toString() {
-    var result = '[';
-    var index = 0;
-    chain.forEach((block) {
-      if (index + 1 == chain.length) {
-        result += '${block.toString()}';
-      } else {
-        result += '${block.toString()},';
-      }
-      index++;
-    });
-    result += ']';
-    return result;
+    return jsonEncode(toList());
   }
 }

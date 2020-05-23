@@ -3,9 +3,9 @@ import 'package:labcoin/src/blockchain/types/generic.dart';
 import 'package:labcoin/src/utils/merkle_tree.dart';
 
 BlockDataType getBlockDataType(String type, Map<String, dynamic> map) {
-  if(type == Transaction.TYPE) {
+  if (type == Transaction.TYPE) {
     return Transaction.fromMap(map);
-  } else if(type == Generic.TYPE) {
+  } else if (type == Generic.TYPE) {
     return Generic.fromMap(map);
   }
   return null;

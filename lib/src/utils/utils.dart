@@ -14,3 +14,21 @@ List<Map<String, dynamic>> castProperly(List unresolved) {
   }
   return resolved;
 }
+
+bool isNumeric(String s) {
+  if(s == null) {
+    return false;
+  }
+  try {
+    double.parse(s);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+enum BlockchainVariants {
+  network,
+  genesis,
+  local
+}
