@@ -14,4 +14,6 @@ doc/api/
 
 # Standart Labcoin Folder
 wallet/
+!wallet/.gitkeep
 storage/
+!storage/.gitkeep
