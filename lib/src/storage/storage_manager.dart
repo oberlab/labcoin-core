@@ -10,8 +10,6 @@ import 'package:labcoin/labcoin.dart';
 class StorageManager {
   final String folderPath;
   Directory blockchain;
-  List<File> selectedPendingTransactions = [];
-  List<File> selectedPendingBlocks = [];
 
   StorageManager(this.folderPath) {
     var directory = Directory(folderPath);
