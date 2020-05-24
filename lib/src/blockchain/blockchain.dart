@@ -87,12 +87,14 @@ class Blockchain {
     for (var node in network.requestNodes) {
       var url = node + '/blockchain/full';
       var response = await get(url);
-      var receivedChain = jsonDecode(response.body) as List;
-      if (receivedChain.length > currentBlockchain.length) {
-        currentBlockchain = <Map<String, dynamic>>[];
-        receivedChain.forEach((var e) {
-          currentBlockchain.add(e as Map<String, dynamic>);
-        });
+      if (response.statusCode == 200) {
+        var receivedChain = jsonDecode(response.body) as List;
+        if (receivedChain.length > currentBlockchain.length) {
+          currentBlockchain = <Map<String, dynamic>>[];
+          receivedChain.forEach((var e) {
+            currentBlockchain.add(e as Map<String, dynamic>);
+          });
+        }
       }
     }
     var blockchain = Blockchain.fromList(currentBlockchain,
