@@ -79,7 +79,7 @@ class RestService {
     for (var trx in memPool.unconfirmedTransactions) {
       memPoolTrx.add(trx.toMap());
     }
-    response.write(memPoolTrx);
+    response.write(jsonEncode(memPoolTrx));
     response.send();
   }
 
