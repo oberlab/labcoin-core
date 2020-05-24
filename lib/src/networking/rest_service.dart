@@ -181,5 +181,6 @@ class RestService {
       'proofOfWorkChar': blockchain.proofOfWorkChar,
       'difficulty': blockchain.difficulty
     }));
+    response.send();
   }
 }
