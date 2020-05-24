@@ -9,6 +9,7 @@ export 'src/blockchain/mempool.dart';
 
 // Transactions
 export 'src/blockchain/types/transaction.dart';
+export 'src/blockchain/types/generic.dart';
 export 'src/transaction/wallet.dart';
 
 // Networking

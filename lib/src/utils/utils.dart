@@ -1,3 +1,5 @@
+import 'package:labcoin/labcoin.dart';
+
 bool containsKeys(Map<String, dynamic> map, List<String> keys) {
   for (var key in keys) {
     if (!map.containsKey(key)) {
@@ -25,6 +27,15 @@ bool isNumeric(String s) {
   } catch (e) {
     return false;
   }
+}
+
+BlockDataType getBlockDataTypeFromMap(Map<String, dynamic> map) {
+  if (map['type'] == Transaction.TYPE) {
+    return Transaction.fromMap(map);
+  } else if (map['type'] == Generic.TYPE) {
+    return Generic.fromMap(map);
+  }
+  return null;
 }
 
 enum BlockchainVariants {

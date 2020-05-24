@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:labcoin/labcoin.dart';
 import 'package:labcoin/src/networking/network.dart';
 import 'package:labcoin/src/networking/rest_service.dart';
+
+import 'package:http/http.dart' as http;
 
 class MemPool {
   final int _maxAgeMilliseconds;
@@ -8,6 +12,19 @@ class MemPool {
   final List<BlockDataType> _unconfirmedTransactions = [];
 
   MemPool(this._maxAgeMilliseconds, this._network);
+
+  static Future<MemPool> fromNetwork(Network network, int maxAgeMilliseconds) async {
+    var memPool = MemPool(maxAgeMilliseconds, network);
+    for (var node in network.requestNodes) {
+      var url = node + '/mempool/transactions';
+      var response = await http.get(url);
+      var receivedTransactions = jsonDecode(response.body) as List;
+      for (var trx in receivedTransactions) {
+        memPool.addWithOutGossip(getBlockDataTypeFromMap(trx));
+      }
+    }
+    return memPool;
+  }
 
   /// Delete old Transaction
   void clean() {
@@ -32,6 +49,17 @@ class MemPool {
 
   /// Check if the Mempool contains a specific transaction
   bool contains(String hash) => get(hash) != null;
+
+  /// Add Transaction to MemPool if the Transaction is valid and not yet added
+  /// without propagating it on the network
+  bool addWithOutGossip(BlockDataType trx) {
+    if (trx.isValid && !contains(trx.toHash())) {
+      _unconfirmedTransactions.add(trx);
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   /// Add Transaction to MemPool if the Transaction is valid and not yet added
   bool add(BlockDataType trx) {

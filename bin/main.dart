@@ -46,6 +46,8 @@ Future<void> main(List<String> args) async {
     }
   }
 
+  var memPool = MemPool(memPoolAge, network);
+
   var variant = BlockchainVariants.values.firstWhere((e) => e.toString() == 'BlockchainVariants.' + arguments['variant']);
 
   if (variant == BlockchainVariants.genesis){
@@ -62,6 +64,7 @@ Future<void> main(List<String> args) async {
       storage.init();
       blockchain = await Blockchain.fromNetwork(network, storageManager: storage,
           difficulty: difficulty);
+      memPool = await MemPool.fromNetwork(network, memPoolAge);
     } else {
       print('You need at least one Node in the Network!');
       exit(1);
@@ -79,7 +82,6 @@ Future<void> main(List<String> args) async {
     exit(1);
   }
   
-  var memPool = MemPool(memPoolAge, network);
   var restService = RestService(blockchain, memPool, network, port: port);
 
   restService.run();
