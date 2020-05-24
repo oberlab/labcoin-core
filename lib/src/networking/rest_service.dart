@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:crypton/crypton.dart';
 import 'package:labcoin/labcoin.dart';
 import 'package:labcoin/src/networking/network.dart';
 import 'package:webservant/webservant.dart';
@@ -56,6 +55,7 @@ class RestService {
       network.registerReceiveNode(walletAddress, uri);
       response.write('Node registerd successfully.');
     } else {
+      response.statusCode = 400;
       response.write('Node falied to register.');
     }
 
