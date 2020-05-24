@@ -54,7 +54,7 @@ Future<void> main(List<String> args) async {
     if (arguments['private-key'] != null) {
       storage.init();
       blockchain = Blockchain.newGenesis(Wallet(arguments['private-key']),
-          difficulty: difficulty, storageManager: storage);
+          difficulty: difficulty, storageManager: storage, network: network);
     } else {
       print('You need a private key to create the genesis Block!');
       exit(1);
@@ -71,7 +71,7 @@ Future<void> main(List<String> args) async {
     }
   } else if (variant == BlockchainVariants.local) {
     if (storage != null) {
-      blockchain = Blockchain(storageManager: storage, difficulty: difficulty);
+      blockchain = Blockchain(storageManager: storage, difficulty: difficulty, network: network);
       blockchain.chain = storage.storedBlockchain.chain;
     } else {
       print('You need to provide a path to the saved blockchain.');
