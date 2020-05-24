@@ -47,27 +47,16 @@ class RestService {
     webServer.run();
   }
 
-  /// Required Header
-  /// - walletAddress
-  /// - walletSig (remoteAddress:remotePort:walletAddress)
   void handleRegisterNode(Response response) async {
-    var header = response.originalRequest.headers;
-    if (header.value('walletAddress') != null &&
-        header.value('walletSig') != null &&
-        response.originalRequest.connectionInfo != null) {
-      var walletAddress = header.value('walletAddress');
-      var remoteAddress = response.originalRequest.connectionInfo.remoteAddress;
-      var remotePort = response.originalRequest.connectionInfo.remotePort;
+    var body = jsonDecode(await response.requestData);
+    if (containsKeys(body, ['uri', 'address'])) {
+      var walletAddress = body['walletAddress'];
+      var uri = body['uri'];
 
-      var publicKey = ECPublicKey.fromString(walletAddress);
-      var sigString = '$remoteAddress:$remotePort:${walletAddress}';
-      var hasValidSig =
-          publicKey.verifySignature(sigString, header.value('walletSig'));
-
-      if (hasValidSig) {
-        network.registerReceiveNode(walletAddress, '$remoteAddress:$remotePort');
-        response.write('Node registerd successfully.');
-      }
+      network.registerReceiveNode(walletAddress, uri);
+      response.write('Node registerd successfully.');
+    } else {
+      response.write('Node falied to register.');
     }
 
     response.send();

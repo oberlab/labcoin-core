@@ -16,6 +16,17 @@ class Network {
     _requestPeers.remove(walletAddress);
   }
 
+  void subscribeToRequestPeers(String uri, String address) {
+    var path = '/node';
+    for (var node in requestNodes) {
+      post(node + path,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'uri': uri, 'address': address}))
+          .timeout(Duration(seconds: 20))
+          .catchError(print);
+    }
+  }
+
   void registerReceiveNode(String walletAddress, String networkAddress) {
     _receiverPeers[walletAddress] = networkAddress;
   }
