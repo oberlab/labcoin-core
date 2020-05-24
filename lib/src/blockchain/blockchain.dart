@@ -3,7 +3,6 @@ import 'dart:core';
 
 import 'package:http/http.dart';
 import 'package:labcoin/labcoin.dart';
-import 'package:labcoin/src/blockchain/types/generic.dart';
 import 'package:labcoin/src/networking/network.dart';
 
 class Blockchain {
