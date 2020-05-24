@@ -9,19 +9,14 @@ import 'package:labcoin/labcoin.dart';
 
 class StorageManager {
   final String folderPath;
-  Directory _pendingTransactions;
   Directory blockchain;
-  List<File> selectedPendingTransactions = [];
-  List<File> selectedPendingBlocks = [];
 
   StorageManager(this.folderPath) {
     var directory = Directory(folderPath);
     if (!directory.existsSync()) directory.createSync(recursive: true);
 
-    _pendingTransactions = Directory('${directory.path}/pendingTransactions');
     blockchain = Directory('${directory.path}/blockchain');
 
-    if (!_pendingTransactions.existsSync()) _pendingTransactions.createSync();
     if (!blockchain.existsSync()) blockchain.createSync();
   }
 
@@ -31,44 +26,9 @@ class StorageManager {
     directory.deleteSync(recursive: true);
     directory.createSync();
 
-    _pendingTransactions = Directory('${directory.path}/pendingTransactions');
     blockchain = Directory('${directory.path}/blockchain');
 
-    _pendingTransactions.createSync();
     blockchain.createSync();
-  }
-
-  void deletePendingTransactions() {
-    for (var file in selectedPendingTransactions) {
-      file.delete();
-    }
-  }
-
-  void deletePendingTransaction(List<Transaction> listToDelete) {
-    for (var trx in listToDelete) {
-      var filename = '${trx.toHash()}.trx';
-      var file = File('${_pendingTransactions.path}/$filename');
-      if (file.existsSync()) file.delete();
-    }
-  }
-
-  BlockData get pendingTransactions {
-    var results = BlockData();
-    var files = _pendingTransactions.listSync();
-    for (var file in files) {
-      var ptrx = File(file.path);
-      selectedPendingTransactions.add(ptrx);
-      results.add(Transaction.fromMap(
-          jsonDecode(ptrx.readAsStringSync()) as Map<String, dynamic>));
-    }
-    return results;
-  }
-
-  void storePendingTransaction(Transaction trx) {
-    var filename = '${trx.toHash()}.trx';
-    var file = File('${_pendingTransactions.path}/$filename');
-    if (!file.existsSync()) file.createSync();
-    file.writeAsStringSync(jsonEncode(trx.toMap()));
   }
 
   List<Block> get BlockchainBlocks {
