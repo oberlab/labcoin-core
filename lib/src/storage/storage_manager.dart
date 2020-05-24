@@ -9,7 +9,6 @@ import 'package:labcoin/labcoin.dart';
 
 class StorageManager {
   final String folderPath;
-  Directory _pendingTransactions;
   Directory blockchain;
   List<File> selectedPendingTransactions = [];
   List<File> selectedPendingBlocks = [];
@@ -31,7 +30,6 @@ class StorageManager {
 
     blockchain = Directory('${directory.path}/blockchain');
 
-    _pendingTransactions.createSync();
     blockchain.createSync();
   }
 
