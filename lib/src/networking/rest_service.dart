@@ -112,7 +112,7 @@ class RestService {
 
   void handleGetWallet(Response response) async {
     response.addHeader('content-type', 'application/json');
-    var address = response.urlParams['address'];
+    var address = Uri.decodeFull(response.urlParams['address']);
     var funds = getFundsOfAddress(blockchain, memPool, address);
     var transactions = getTransactionsOfAddress(blockchain, address)
         .map((var trx) => trx.toMap()).toList();
