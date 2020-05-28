@@ -44,7 +44,7 @@ class Block {
   bool get isValid {
     var publicKey = ECPublicKey.fromString(creator);
     var hasValidSignature = publicKey.verifySignature(toHash(), signature);
-    return data.isValid && hasValidSignature;
+    return data.isValidData(this) && hasValidSignature;
   }
 
   /// Sign the Block
