@@ -17,3 +17,6 @@ wallet/
 !wallet/.gitkeep
 storage/
 !storage/.gitkeep
+
+.idea/
+*.exe

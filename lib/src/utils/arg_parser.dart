@@ -10,6 +10,7 @@ ArgParser getArgParser() {
   parser.addOption('storage', abbr: 's', defaultsTo: null, help: 'Sets the storage path to persist the blockchain.');
   parser.addOption('port', abbr: 'p', defaultsTo: '3000', help: 'Define the port where the webserver should listen to.');
   parser.addOption('mempool-age', defaultsTo: '10000', help: 'Define the maximal age of a Transction in the Mempool before it gets deleted in miliseconds.');
+  parser.addOption('config', abbr: 'C', defaultsTo: null, help: 'Using a config File overrides all other options!', valueHelp: 'config-file path');
 
   return parser;
 }

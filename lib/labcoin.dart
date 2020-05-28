@@ -21,6 +21,8 @@ export 'src/storage/storage_manager.dart';
 
 // Utils
 export 'src/utils/utils.dart';
+export 'src/utils/config.dart';
+export 'src/utils/whitelist.dart';
 export 'src/utils/pemhelper.dart';
 export 'src/utils/blockchain_tools.dart';
 export 'src/utils/arg_parser.dart';

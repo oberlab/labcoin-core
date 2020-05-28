@@ -1,88 +1,76 @@
-
 import 'dart:io';
 
 import 'package:labcoin/labcoin.dart';
 
-// --private-key, -pK
-// --network, -n
-// --port, -p
-// --init-storage
-// --storage -s
-// --mempool-age, -mA
-// --variant
-
 Future<void> main(List<String> args) async {
-  var memPoolAge = 10000;
-  var port = 3000;
   var difficulty = 3;
-  var network = Network();
-  var storage;
   var blockchain = Blockchain();
 
-  var arguments = getArgParser().parse(args);
+  var argResults = getArgParser().parse(args);
 
-  if (arguments['help']) {
+  if (argResults['help']) {
     print('Labcoin Full Node Help\n\$ labcoin\n\nOptions:');
     print(getArgParser().usage);
     exit(0);
   }
 
-  if (isNumeric(arguments['mempool-age'])) {
-    memPoolAge = int.parse(arguments['mempool-age']);
-  }
+  var config;
 
-  if (isNumeric(arguments['port'])) {
-    port = int.parse(arguments['port']);
-  }
-
-  if (arguments['storage'] != null) {
-    storage = StorageManager(arguments['storage']);
-  }
-
-  if (arguments['network'] != null) {
-    var nodes = arguments['network'].toString().split(',');
-    for (var node in nodes) {
-      network.registerRequestNode(node);
+  if (argResults['config'] != null) {
+    var configFile = File(argResults['config']);
+    if (configFile.existsSync()) {
+      try {
+        config = Config.fromFile(configFile);
+      } catch (e) {
+        print('The Config-File seems to be broken :(');
+        exit(1);
+      }
+    } else {
+      print('The File does not exist!');
+      exit(1);
     }
+  } else {
+    config = Config.fromArgResults(argResults);
   }
 
-  var memPool = MemPool(memPoolAge, network);
+  var memPool = MemPool(config.memPoolAge, config.network);
 
-  var variant = BlockchainVariants.values.firstWhere((e) => e.toString() == 'BlockchainVariants.' + arguments['variant']);
-
-  if (variant == BlockchainVariants.genesis){
-    if (arguments['private-key'] != null) {
-      storage.init();
-      blockchain = Blockchain.newGenesis(Wallet(arguments['private-key']),
-          difficulty: difficulty, storageManager: storage, network: network);
+  if (config.variant == BlockchainVariants.genesis) {
+    if (config.hasWallet) {
+      config.storageManager.init();
+      blockchain = Blockchain.newGenesis(config.creatorWallet,
+          difficulty: difficulty,
+          storageManager: config.storageManager,
+          network: config.network);
     } else {
       print('You need a private key to create the genesis Block!');
       exit(1);
     }
-  } else if(variant == BlockchainVariants.network) {
-    if (network.requestNodes.isNotEmpty) {
-      storage.init();
-      blockchain = await Blockchain.fromNetwork(network, storageManager: storage,
-          difficulty: difficulty);
-      memPool = await MemPool.fromNetwork(network, memPoolAge);
+  } else if (config.variant == BlockchainVariants.network) {
+    if (config.network.requestNodes.isNotEmpty) {
+      if (config.isPersistent) config.storageManager.init();
+      blockchain = await Blockchain.fromNetwork(config.network,
+          storageManager: config.storageManager, difficulty: difficulty);
+      memPool = await MemPool.fromNetwork(config.network, config.memPoolAge);
     } else {
       print('You need at least one Node in the Network!');
       exit(1);
     }
-  } else if (variant == BlockchainVariants.local) {
-    if (storage != null) {
-      blockchain = Blockchain(storageManager: storage, difficulty: difficulty, network: network);
-      blockchain.chain = storage.storedBlockchain.chain;
+  } else if (config.variant == BlockchainVariants.local) {
+    if (config.isPersistent) {
+      blockchain = Blockchain(
+          storageManager: config.storageManager,
+          difficulty: difficulty,
+          network: config.network);
+      blockchain.chain = config.storageManager.storedBlockchain.chain;
     } else {
       print('You need to provide a path to the saved blockchain.');
       exit(1);
     }
-  } else {
-    print('${arguments['variant']} is not valid. Please select a valid variant of genesis, network, local');
-    exit(1);
   }
-  
-  var restService = RestService(blockchain, memPool, network, port: port);
+
+  var restService =
+      RestService(blockchain, memPool, config.network, port: config.port);
 
   restService.run();
 }
