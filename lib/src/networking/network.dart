@@ -20,8 +20,8 @@ class Network {
     var path = '/node';
     for (var node in requestNodes) {
       post(node + path,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({'uri': uri, 'address': address}))
+              headers: {'Content-Type': 'application/json'},
+              body: jsonEncode({'uri': uri, 'address': address}))
           .timeout(Duration(seconds: 20))
           .catchError(print);
     }
@@ -46,8 +46,8 @@ class Network {
     }
     for (var node in requestNodes) {
       post(node + path,
-          headers: {'Content-Type': 'application/json'},
-          body: broadcastMessage)
+              headers: {'Content-Type': 'application/json'},
+              body: broadcastMessage)
           .timeout(Duration(seconds: 20))
           .catchError(print);
     }
