@@ -68,9 +68,12 @@ Future<void> main(List<String> args) async {
   }
 
   if (config.canSubscribe && config.hasWallet) {
+    var uri =
+        '${config.hasHttps ? 'https://' : 'http://'}${config.hostname}:${config.port}';
     var payload = {
-      'uri': '${config.hasHttps ? 'https://' : 'http://'}${config.hostname}:${config.port}',
-      'address': config.creatorWallet.publicKey.toString()
+      'uri': uri,
+      'address': config.creatorWallet.publicKey.toString(),
+      'signature': config.creatorWallet.privateKey.createSignature(uri)
     };
     print(payload);
     config.network.broadcast('/node', payload);

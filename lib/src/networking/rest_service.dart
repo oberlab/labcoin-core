@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypton/crypton.dart';
 import 'package:labcoin/labcoin.dart';
 import 'package:labcoin/src/networking/network.dart';
 import 'package:webservant/webservant.dart';
@@ -48,15 +49,24 @@ class RestService {
 
   void handleRegisterNode(Response response) async {
     var body = jsonDecode(await response.requestData);
-    if (containsKeys(body, ['uri', 'address'])) {
+    if (containsKeys(body, ['uri', 'address', 'signature'])) {
       var walletAddress = body['walletAddress'];
       var uri = body['uri'];
+      var signature = body['signature'];
 
-      network.registerReceiveNode(walletAddress, uri);
-      response.write('Node registerd successfully.');
+      var publicKey = ECPublicKey.fromString(walletAddress);
+      var hasValidSignature = publicKey.verifySignature(uri, signature);
+
+      if (hasValidSignature) {
+        network.registerReceiveNode(walletAddress, uri);
+        response.write('Node registered successfully.');
+      } else {
+        response.statusCode = 400;
+        response.write('Node failed to register.');
+      }
     } else {
       response.statusCode = 400;
-      response.write('Node falied to register.');
+      response.write('Node failed to register.');
     }
 
     response.send();
@@ -125,9 +135,11 @@ class RestService {
     var address = Uri.decodeFull(response.urlParams['address']);
     var funds = getFundsOfAddress(blockchain, memPool, address);
     var transactions = getTransactionsOfAddress(blockchain, address)
-        .map((var trx) => trx.toMap()).toList();
+        .map((var trx) => trx.toMap())
+        .toList();
     var memPoolTransactions = getMemPoolTransactionsOfAddress(memPool, address)
-        .map((var trx) => trx.toMap()).toList();
+        .map((var trx) => trx.toMap())
+        .toList();
     response.write(jsonEncode({
       'address': address,
       'funds': funds,
@@ -146,7 +158,9 @@ class RestService {
       // Negative count means from last block counting
       if (isNumeric(count) && int.parse(count) >= (blockchain.length * -1)) {
         var length = int.parse(count) * -1;
-        response.write(jsonEncode(blockchain.toList().reversed
+        response.write(jsonEncode(blockchain
+            .toList()
+            .reversed
             .toList()
             .sublist(0, length)
             .reversed
@@ -162,8 +176,7 @@ class RestService {
       } else {
         response.statusCode = 400;
         response.write(
-            jsonEncode({'message': 'Please specify the count as integer'})
-        );
+            jsonEncode({'message': 'Please specify the count as integer'}));
       }
     }
     response.send();

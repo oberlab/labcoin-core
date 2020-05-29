@@ -32,11 +32,9 @@ class Config {
   bool get hasHttps => _https;
   bool get canSubscribe => network.requestNodes.isNotEmpty && hostname != null;
 
-
   Config.fromArgResults(ArgResults argResults) {
     _variant = BlockchainVariants.values.firstWhere(
-            (e) => e.toString() == 'BlockchainVariants.' + argResults['variant']
-    );
+        (e) => e.toString() == 'BlockchainVariants.' + argResults['variant']);
 
     if (isNumeric(argResults['mempool-age'])) {
       _memPoolAge = int.parse(argResults['mempool-age']);
@@ -60,21 +58,17 @@ class Config {
     if (argResults['private-key'] != null) {
       _creatorWallet = Wallet(argResults['private-key']);
     }
-
   }
 
   Config.fromFile(File configFile) {
     var configDoc = loadYaml(configFile.readAsStringSync());
 
     _variant = BlockchainVariants.values.firstWhere(
-            (e) => e.toString() == 'BlockchainVariants.' + configDoc['variant']
-    );
+        (e) => e.toString() == 'BlockchainVariants.' + configDoc['variant']);
 
     if (configDoc['mempool-age'] != null) {
       _memPoolAge = configDoc['mempool-age'];
     }
-
-
 
     if (configDoc['storage'] != null) {
       _storageManager = StorageManager(configDoc['storage']);
