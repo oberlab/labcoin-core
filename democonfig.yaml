@@ -1,0 +1,11 @@
+# private-key: 'My Private Key'
+variant: 'network'
+mempool-age: 1000
+
+network:
+  port: 3000
+  nodes:
+    - http://konstantinullrich.de:8081
+
+whitelist:
+  - A8sCvSG5hZknd3NklLlaF7pRpGxVUQdo5Ceh6KyXruBs

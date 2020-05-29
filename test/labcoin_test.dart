@@ -1,3 +1,4 @@
+import 'package:labcoin/src/utils/config.dart';
 import 'package:test/test.dart';
 
 import 'package:labcoin/labcoin.dart';
@@ -29,6 +30,16 @@ void main() {
     test('Calculate the correct proof of work requirement', () {
       var requirement = blockchain.workRequirement;
       expect(requirement, '000');
+    });
+
+  });
+
+  group('A group of Config Tests', () {
+
+    test('Read correct Config from ArgResults', () {
+      var results = getArgParser().parse(['--variant', 'genesis']);
+      var config = Config.fromArgResults(results);
+      expect(config.port, 3000);
     });
 
   });
