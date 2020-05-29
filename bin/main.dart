@@ -14,7 +14,7 @@ Future<void> main(List<String> args) async {
     exit(0);
   }
 
-  var config;
+  var config = Config.fromArgResults(argResults);
 
   if (argResults['config'] != null) {
     var configFile = File(argResults['config']);
@@ -29,8 +29,6 @@ Future<void> main(List<String> args) async {
       print('The File does not exist!');
       exit(1);
     }
-  } else {
-    config = Config.fromArgResults(argResults);
   }
 
   var memPool = MemPool(config.memPoolAge, config.network);
@@ -67,6 +65,15 @@ Future<void> main(List<String> args) async {
       print('You need to provide a path to the saved blockchain.');
       exit(1);
     }
+  }
+
+  if (config.canSubscribe && config.hasWallet) {
+    var payload = {
+      'uri': '${config.hasHttps ? 'https://' : 'http://'}${config.hostname}:${config.port}',
+      'address': config.creatorWallet.publicKey.toString()
+    };
+    print(payload);
+    config.network.broadcast('/node', payload);
   }
 
   var restService =

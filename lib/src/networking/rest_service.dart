@@ -74,16 +74,21 @@ class RestService {
 
   void handleAddToMemPool(Response response) async {
     var content = await response.requestData;
-    Map rawMap = jsonDecode(content);
-    var trx = Transaction.fromMap(rawMap);
-    if (!memPool.contains(trx.toHash())) {
-      if (memPool.add(trx)) {
-        response.write(
-            'Your transaction has been added to the MemPool. Awaiting to be mined.');
-      } else {
-        response.write(
-            'Your transaction is invalid. Please try it again with a valid transcation.');
+    try {
+      Map rawMap = jsonDecode(content);
+      var trx = Transaction.fromMap(rawMap);
+      if (!memPool.contains(trx.toHash())) {
+        if (memPool.add(trx)) {
+          response.write(
+              'Your transaction has been added to the MemPool. Awaiting to be mined.');
+        } else {
+          response.write(
+              'Your transaction is invalid. Please try it again with a valid transcation.');
+        }
       }
+    } catch (error) {
+      response.statusCode = 400;
+      response.write(error.toString());
     }
     response.send();
   }
@@ -91,9 +96,14 @@ class RestService {
   void handleAddBlock(Response response) async {
     response.addHeader('content-type', 'application/json');
     var content = await response.requestData;
-    Map rawMap = jsonDecode(content);
-    var block = Block.fromMap(rawMap);
-    blockchain.addBlock(block);
+    try {
+      Map rawMap = jsonDecode(content);
+      var block = Block.fromMap(rawMap);
+      blockchain.addBlock(block);
+    } catch (error) {
+      response.statusCode = 400;
+      response.write(error.toString());
+    }
     response.send();
   }
 

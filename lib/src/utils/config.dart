@@ -13,6 +13,8 @@ class Config {
   int _port = 3000;
   int _memPoolAge = 1000;
   Whitelist _whitelist = Whitelist.empty();
+  String _hostname;
+  bool _https = false;
 
   final Network _network = Network();
 
@@ -21,11 +23,14 @@ class Config {
   Network get network => _network;
   StorageManager get storageManager => _storageManager;
   Whitelist get whitelist => _whitelist;
+  String get hostname => _hostname;
   int get port => _port;
   int get memPoolAge => _memPoolAge;
 
   bool get isPersistent => storageManager != null;
   bool get hasWallet => creatorWallet != null;
+  bool get hasHttps => _https;
+  bool get canSubscribe => network.requestNodes.isNotEmpty && hostname != null;
 
 
   Config.fromArgResults(ArgResults argResults) {
@@ -78,6 +83,12 @@ class Config {
     if (configDoc['network'] != null) {
       if (configDoc['network']['port'] != null) {
         _port = configDoc['network']['port'];
+      }
+      if (configDoc['network']['hostname'] != null) {
+        _hostname = configDoc['network']['hostname'];
+      }
+      if (configDoc['network']['https'] != null) {
+        _https = configDoc['network']['https'];
       }
       if (configDoc['network']['nodes'] != null) {
         var nodes = configDoc['network']['nodes'];
