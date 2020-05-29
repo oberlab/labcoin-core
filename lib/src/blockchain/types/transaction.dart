@@ -14,12 +14,21 @@ class Transaction extends BlockDataType {
   String _signature;
 
   String get toAddress => _toAddress;
-  String get fromAddress => _fromAddress;
   int get amount => _amount;
-  @override
-  int get timestamp => _timestamp;
 
   static String get TYPE => 'TRANSACTION';
+
+  @override
+  String get type => Transaction.TYPE;
+
+  @override
+  String get fromAddress => _fromAddress;
+
+  @override
+  String get signature => _signature;
+
+  @override
+  int get timestamp => _timestamp;
 
   /// Returns if the Transaction is valid
   @override

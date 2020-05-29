@@ -35,6 +35,15 @@ class Generic extends BlockDataType {
   static String get TYPE => 'GENERIC';
 
   @override
+  String get type => Generic.TYPE;
+
+  @override
+  String get fromAddress => _fromAddress;
+
+  @override
+  String get signature => _signature;
+
+  @override
   int get timestamp => _timestamp;
 
   @override

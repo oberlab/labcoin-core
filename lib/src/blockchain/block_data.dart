@@ -25,6 +25,29 @@ class BlockData {
     return results;
   }
 
+  int get generatedTransactions {
+    var results = <BlockDataType>[];
+    for (var trx in _entries) {
+      if (trx.type == Transaction.TYPE &&
+          trx.fromAddress == GENERATED_ADDRESS) {
+        results.add(trx);
+      }
+    }
+    return results.length;
+  }
+
+  bool isValidData(Block block) {
+    if (generatedTransactions > 1) return false;
+    for (var trx in _entries) {
+      if (trx.type == Transaction.TYPE) {
+        if (!isValidTransaction(block, trx)) return false;
+      } else {
+        if (!trx.isValid) return false;
+      }
+    }
+    return true;
+  }
+
   void add(BlockDataType entry) => _entries.add(entry);
 
   String toHash() {
