@@ -4,6 +4,7 @@ mempool-age: 1000
 
 network:
   port: 3000
+  hostname: 'konstantinullrich.de'
   nodes:
     - http://konstantinullrich.de:8081
 
