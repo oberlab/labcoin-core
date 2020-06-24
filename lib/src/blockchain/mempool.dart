@@ -13,7 +13,8 @@ class MemPool {
 
   MemPool(this._maxAgeMilliseconds, this._network);
 
-  static Future<MemPool> fromNetwork(Network network, int maxAgeMilliseconds) async {
+  static Future<MemPool> fromNetwork(
+      Network network, int maxAgeMilliseconds) async {
     var memPool = MemPool(maxAgeMilliseconds, network);
     for (var node in network.requestNodes) {
       var url = node + '/mempool/transactions';

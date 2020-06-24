@@ -18,7 +18,7 @@ List<Map<String, dynamic>> castProperly(List unresolved) {
 }
 
 bool isNumeric(String s) {
-  if(s == null) {
+  if (s == null) {
     return false;
   }
   try {
@@ -38,8 +38,4 @@ BlockDataType getBlockDataTypeFromMap(Map<String, dynamic> map) {
   return null;
 }
 
-enum BlockchainVariants {
-  network,
-  genesis,
-  local
-}
+enum BlockchainVariants { network, genesis, local }

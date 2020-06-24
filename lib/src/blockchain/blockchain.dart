@@ -53,13 +53,18 @@ class Blockchain {
   Blockchain({this.storageManager, this.network, this.difficulty = 3});
 
   /// Create a new Blockchain with a Genesis Block
-  Blockchain.newGenesis(Wallet creatorWallet, {this.storageManager, this.network, this.difficulty = 3, this.whitelist, int defaultMint = 1000000000000}) {
+  Blockchain.newGenesis(Wallet creatorWallet,
+      {this.storageManager,
+      this.network,
+      this.difficulty = 3,
+      this.whitelist,
+      int defaultMint = 1000000000000}) {
     var message = Generic('Genesis', creatorWallet.publicKey.toString());
     message.sign(creatorWallet.privateKey);
 
-    var trx = Transaction(GENERATED_ADDRESS, creatorWallet.publicKey.toString(), defaultMint);
+    var trx = Transaction(
+        GENERATED_ADDRESS, creatorWallet.publicKey.toString(), defaultMint);
     trx.sign(creatorWallet.privateKey);
-
 
     var blockData = BlockData();
     blockData.add(message);
@@ -73,7 +78,10 @@ class Blockchain {
   }
 
   Blockchain.fromList(List<Map<String, dynamic>> unresolvedBlockchain,
-      {this.storageManager, this.network, this.whitelist, this.difficulty = 3}) {
+      {this.storageManager,
+      this.network,
+      this.whitelist,
+      this.difficulty = 3}) {
     unresolvedBlockchain.forEach((block) {
       chain.add(Block.fromMap(block));
     });
@@ -83,7 +91,9 @@ class Blockchain {
 
   /// Initialize a Blockchain from a network
   static Future<Blockchain> fromNetwork(Network network,
-      {StorageManager storageManager, Whitelist whitelist, int difficulty = 3}) async {
+      {StorageManager storageManager,
+      Whitelist whitelist,
+      int difficulty = 3}) async {
     var currentBlockchain = <Map<String, dynamic>>[];
     for (var node in network.requestNodes) {
       var url = node + '/blockchain/full';
@@ -102,8 +112,7 @@ class Blockchain {
         storageManager: storageManager,
         network: network,
         whitelist: whitelist,
-        difficulty: difficulty
-    );
+        difficulty: difficulty);
     return blockchain;
   }
 
@@ -129,13 +138,14 @@ class Blockchain {
 
   /// Add a valid Block to the Blockchain
   void addBlock(Block block) {
-    if (block.isValid && block.height >= length
-        && block.toHash().startsWith(workRequirement)
-        && whitelist.isOnWhitelist(block.creator)
-        && _previousHash == block.previousHash) {
-        chain.add(block);
-        save();
-        network.broadcast('/block', block.toMap());
+    if (block.isValid &&
+        block.height >= length &&
+        block.toHash().startsWith(workRequirement) &&
+        whitelist.isOnWhitelist(block.creator) &&
+        _previousHash == block.previousHash) {
+      chain.add(block);
+      save();
+      network.broadcast('/block', block.toMap());
     }
   }
 
