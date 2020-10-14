@@ -19,22 +19,32 @@ class Config {
   final Network _network = Network();
 
   BlockchainVariants get variant => _variant;
+
   Wallet get creatorWallet => _creatorWallet;
+
   Network get network => _network;
+
   StorageManager get storageManager => _storageManager;
+
   Whitelist get whitelist => _whitelist;
+
   String get hostname => _hostname;
+
   int get port => _port;
+
   int get memPoolAge => _memPoolAge;
 
   bool get isPersistent => storageManager != null;
+
   bool get hasWallet => creatorWallet != null;
+
   bool get hasHttps => _https;
+
   bool get canSubscribe => network.requestNodes.isNotEmpty && hostname != null;
 
   Config.fromArgResults(ArgResults argResults) {
     _variant = BlockchainVariants.values.firstWhere(
-        (e) => e.toString() == 'BlockchainVariants.' + argResults['variant']);
+        (e) => e.toString() == 'BlockchainVariants.${argResults['variant']}');
 
     if (isNumeric(argResults['mempool-age'])) {
       _memPoolAge = int.parse(argResults['mempool-age']);
@@ -64,7 +74,7 @@ class Config {
     var configDoc = loadYaml(configFile.readAsStringSync());
 
     _variant = BlockchainVariants.values.firstWhere(
-        (e) => e.toString() == 'BlockchainVariants.' + configDoc['variant']);
+        (e) => e.toString() == 'BlockchainVariants.${configDoc['variant']}');
 
     if (configDoc['mempool-age'] != null) {
       _memPoolAge = configDoc['mempool-age'];

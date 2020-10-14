@@ -1,5 +1,4 @@
 # Labcoin
-
 The Oberlab local cryptocurrency.
 
 Labcoin utilizes a SHA256 Proof of Work Algorithm
@@ -7,8 +6,7 @@ Labcoin utilizes a SHA256 Proof of Work Algorithm
 > A Blockchain explorer is avaliable at https://github.com/mowolf/gitcoin-frontend
 
 
-# Features
-
+## Features
 - Backend 100% dartlang.
 - Based on a blockchain.
 - Proof by work validation algorithm.
@@ -16,18 +14,30 @@ Labcoin utilizes a SHA256 Proof of Work Algorithm
 - Each user is a http client and server.
 
 
-# Development
-
+## Development
 Labcoin uses various libraries to improve the development process:  
-- [asn1lib :](https://pub.dev/packages/asn1lib) Encoding and decoding.  
-- [Crypton :](https://pub.dev/packages/crypton) ECSignature.  
-- [http :](https://pub.dev/packages/http) Http requests.  
-- [crypto :](https://pub.dev/packages/crypto) Cryptographic hashing functions.  
+- [asn1lib](https://pub.dev/packages/asn1lib): Encoding and decoding.  
+- [Crypton](https://pub.dev/packages/crypton): ECSignature.  
+- [http](https://pub.dev/packages/http): Http requests.  
+- [crypto](https://pub.dev/packages/crypto): Cryptographic hashing functions.  
 
-# Building
-
+## Building
 To build the project, you need:
 - [Dart Sdk](https://dart.dev/get-dart)
 
-# ToDo
-[ ] Add Tool to Sign Messages
+## Docker
+The Docker Image is build using 
+````shell script
+docker build . -t labcoin-node 
+````
+
+The available Environment Variables are
+
+| Name        | Description                                | Default Value             |
+| ----------- | ------------------------------------------ | ------------------------- |
+| VARIANT     | Blockchain Variant (local/genesis/network) | network                   |
+| MEMPOOL_AGE | Maximal Age of submitted Transactions      | 1000                      |
+| PORT        | The port of the Rest Endpoint              | 3000                      |
+| STORAGE     | Path to the persistent Blockchain          | ./storage                 |
+| NETWORK     | Trusted Nodes to download the Blockchain   | konstantinullrich.de:8081 |
+| PRIVATE_KEY | Private Key used to sign new Blocks        |                           |
